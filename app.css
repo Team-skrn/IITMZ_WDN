@@ -1,0 +1,154 @@
+html {
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+  }
+  
+  body {
+    background-color: #00BAEB;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px;
+    gap: 30px;
+  }
+  h1 {
+    text-align: center; /* Center align the title */
+    margin-bottom: 20px; /* Add spacing below the title */
+  }
+  .login {
+    background-color: #ECFBFF;
+    border-radius: 15px;
+    padding: 30px 45px;
+    width: 100%;
+    height: 100%;
+    max-width: 600px;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  /* Style the input container */
+
+  .password, .userid {
+    width: 100%; /* Make the input field fill the remaining space */
+    padding: 10px; /* Add padding to the input field */
+    color: #E3F3F7;
+    border: 1px solid #005268; /* Add a thin border */
+    border-radius: 7px; /* Add rounded corners */
+    box-sizing: border-box; /* Include padding within the width */
+  }
+  /* Style the input container */
+.input-container {
+    display: flex; /* Arrange icon and input field side-by-side */
+    width: 100%; /* Make the container full width */
+    margin-bottom: 15px; /* Add spacing between input sections */
+    margin-top: 15px;
+  }
+  
+  /* Style the icons */
+  .icon {
+    padding: 10px; /* Add padding around the icon */
+    background-color: dodgerblue; /* Set background color for the icon container */
+    color: white; /* Set icon color */
+    min-width: 50px; /* Set minimum width for the icon container */
+    text-align: center; /* Center the icon within the container */
+  }
+  
+  /* User Icon Style (using a circle and a line) */
+  .user-icon {
+    position: relative; /* Enable positioning for child elements */
+  }
+  .user-icon::before {
+    content: ""; /* Add pseudo-element for the circle */
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%; /* Create a circle */
+    background-color: inherit; /* Inherit background color from parent */
+    position: absolute; /* Position the circle element */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the circle */
+  }
+  .user-icon::after {
+    content: ""; /* Add pseudo-element for the line */
+    display: block;
+    width: 10px;
+    height: 2px;
+    background-color: inherit; /* Inherit background color from parent */
+    position: absolute; /* Position the line element */
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg); /* Center and rotate the line */
+  }
+  
+  /* Password Icon Style (using a rectangle and a small circle) */
+  .password-icon::before {
+    content: ""; /* Add pseudo-element for the rectangle */
+    display: block;
+    width: 15px;
+    height: 10px;
+    background-color: inherit; /* Inherit background color from parent */
+  }
+  .password-icon::after {
+    content: ""; /* Add pseudo-element for the circle */
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%; /* Create a circle */
+    background-color: inherit; /* Inherit background color from parent */
+    position: absolute; /* Position the circle element */
+    bottom: 3px;
+    right: 3px;
+  }
+  
+  .login-button {
+    border: 1px solid #9dd1ff;
+    border-radius: 10px;
+    background-color: #00BAEB;
+    color: #ecfbff;
+    display: inline-block;
+    padding: 15px 35px;
+    text-decoration: none;
+    margin: 25px 0;
+    transition: background-color 200ms ease-in-out;
+  }
+  
+  .login-button:hover, .login-button:focus {
+    background-color: #e1f1ff;
+    color: #00BAEB;
+  }
+  
+  .button-container {
+    align-items: stretch;
+  }
+  .dashboard-button {
+    border-radius: 7px;
+    background-color: #00BAEB;
+    color: #ecfbff;
+    display: inline-block;
+    padding: 15px 35px;
+    text-decoration: none;
+    margin: 25px 0;
+    transition: background-color 200ms ease-in-out;
+  }
+.page-body {
+  background-color: #e1f1ff;
+}
+.logout-button {
+  border: 1px solid #00BAEB;
+  border-radius: 7px;
+  background-color: #ecfbff;
+  color: #00BAEB;
+  display: inline-block;
+  padding: 15px 35px;
+  text-decoration: none;
+  margin: 25px 0;
+  transition: background-color 200ms ease-in-out;
+}
+.head {
+  display: flex;
+  flex-direction: row;
+}

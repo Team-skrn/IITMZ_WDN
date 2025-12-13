@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="app_title">IIT Madras Zanzibar Water Management</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700">
+    <link rel="icon" href="IITMZ_Logo.ico" type="image/x-icon">
+    <link rel="manifest" href="/IITMZ_WDN/manifest.json">
+    <link rel="alternate" href="/IITMZ_WDN/site.webmanifest">
+    <meta name="theme-color" content="#007bff">
+    <meta name="description" content="Real-time water level monitoring system for IIT Madras Zanzibar">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="IITM Water Mgmt">
+    <link rel="apple-touch-icon" href="IITMZ_Logo_192.png">
+    
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            text-align: center;
+            background-image: url('IITMZ.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 { color: #333; }
+        .button-container { margin-top: 20px; }
+        .dashboard-button {
+            display: block;
+            width: 200px;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .dashboard-button:hover { background-color: #0056b3; }
+        .install-btn {
+            font-size: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+        .update-banner {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: #222;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        /* Hide ALL browser translate UI */
+        [role="banner"],
+        .goog-te-banner-frame,
+        .goog-te-balloon-frame,
+        #goog-gt-tt,
+        .skiptranslate,
+        .goog-te-notranslate,
+        .notranslate,
+        iframe[name*="google"],
+        div[id*="google"],
+        body > div:first-child,
+        html > div:first-child {
+            display: none !important;
+        }
+        html {
+            top: 0 !important;
+            margin-top: 0 !important;
+        }
+        .language-selector-header {
+            background-color: rgba(0, 123, 255, 0.9);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 100;
+        }
+        .language-selector-header label {
+            font-weight: bold;
+            font-size: 14px;
+            margin: 0;
+            color: white;
+        }
+        .language-selector-header select {
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .language-selector-header select option {
+            background-color: #007bff;
+            color: white;
+        }
+        .language-selector-header select:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        #google_translate_element {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            min-height: 30px;
+            display: none;
+        }
+        .goog-te-combo {
+            background-color: #007bff !important;
+            color: white !important;
+            padding: 8px 12px !important;
+            border-radius: 5px !important;
+            border: none !important;
+            cursor: pointer !important;
+            font-size: 14px !important;
+            min-width: 60px !important;
+        }
+        .goog-te-gadget {
+            font-family: inherit !important;
+        }
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            #google_translate_element {
+                position: fixed;
+                top: 5px;
+                right: 5px;
+                z-index: 1000;
+                min-height: 25px;
+            }
+            .goog-te-combo {
+                padding: 6px 10px !important;
+                font-size: 12px !important;
+                min-width: 50px !important;
+            }
+            .dashboard-button {
+                width: 90%;
+                max-width: 300px;
+                padding: 12px;
+                font-size: 14px;
+            }
+            h1 {
+                font-size: 20px;
+                margin: 10px 0;
+            }
+            h3 {
+                font-size: 16px;
+                margin: 15px 0 10px 0;
+            }
+            img {
+                max-width: 90%;
+                height: auto;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+            #google_translate_element {
+                top: 3px;
+                right: 3px;
+                min-height: 22px;
+            }
+            .goog-te-combo {
+                padding: 5px 8px !important;
+                font-size: 11px !important;
+                min-width: 45px !important;
+            }
+            h1 {
+                font-size: 18px;
+            }
+            h3 {
+                font-size: 14px;
+            }
+            .dashboard-button {
+                width: 85%;
+                font-size: 13px;
+            }
+            img {
+                max-width: 80%;
+            }
+        }
+        @media (max-width: 360px) {
+            body {
+                padding: 6px;
+            }
+            #google_translate_element {
+                top: 2px;
+                right: 2px;
+            }
+            .goog-te-combo {
+                padding: 4px 6px !important;
+                font-size: 10px !important;
+                min-width: 40px !important;
+            }
+            img {
+                max-width: 70%;
+            }
+        }
+    </style>
+    <!-- New Translation System -->
+    <script src="translation-manager.js"></script>
+<!--     <script>
+        const correctPassword = "Padur@123"; // Change this to your password
+
+        function checkPassword() {
+            if (localStorage.getItem("authenticated") === "true") return;
+
+            let userInput = prompt("Enter Password:");
+            if (userInput === correctPassword) {
+                localStorage.setItem("authenticated", "true");
+            } else {
+                alert("Incorrect password! Access denied.");
+                window.location.href = "https://team-skrn.github.io/Padur_Water_Management/"; // Redirect if incorrect
+            }
+        }
+
+        checkPassword(); // Run password check on page load
+    </script> -->
+</head>
+<body>
+    <div class="language-selector-header">
+        <label data-i18n="language_label">Lugha:</label>
+        <select id="language-select" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="ar">العربية</option>
+            <option value="sw">Swahili</option>
+        </select>
+    </div>
+
+    <img src="IITMZ_Text_Logo.png" alt="IITMZ Logo" width="250">
+    <h1 data-i18n="app_title">IIT Madras Zanzibar Water Management</h1>
+    <h2></h2>
+
+    <h3 data-i18n="select_tank_sump">Select the Tank/Sump</h3>
+    <div class="button-container">
+        <a href="reservoir.html" class="dashboard-button" data-i18n="reservoir">Reservoir</a>
+        <a href="overhead-tank.html" class="dashboard-button" data-i18n="overhead_tank">Overhead Tank</a>
+    </div>
+
+    <button id="install-button" class="install-btn" data-i18n="install_app" onclick="installPWA()">Install App</button>
+
+    <script>
+        function changeLanguage(lang) {
+            translationManager.setLanguage(lang);
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
+            if (document.getElementById('language-select')) {
+                document.getElementById('language-select').value = savedLanguage;
+            }
+            translationManager.setLanguage(savedLanguage);
+        });
+
+        // ✅ Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/IITMZ_WDN/service-worker.js')
+                .then((reg) => {
+                    console.log("✅ Service Worker Registered successfully");
+                    // Check for updates every minute
+                    setInterval(() => {
+                        reg.update();
+                    }, 60000);
+                    
+                    reg.onupdatefound = () => {
+                        const installingWorker = reg.installing;
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showUpdateNotification();
+                            }
+                        };
+                    };
+                }).catch((err) => console.error("❌ Service Worker Registration Failed:", err));
+        } else {
+            console.warn("⚠️ Service Workers not supported in this browser");
+        }
+
+        // ✅ Show update notification
+        function showUpdateNotification() {
+            let updateBanner = document.createElement("div");
+            updateBanner.className = "update-banner";
+            updateBanner.innerHTML = `New version available! <button onclick="window.location.reload()">Update</button>`;
+            document.body.appendChild(updateBanner);
+        }
+
+        // ✅ Handle PWA Install Button
+        let deferredPrompt;
+        window.addEventListener("beforeinstallprompt", (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById("install-button").style.display = "block";
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === "accepted") {
+                        console.log("PWA Installed");
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        // ✅ Force Update Check on Load
+        if (navigator.serviceWorker) {
+            navigator.serviceWorker.getRegistration().then((reg) => {
+                if (reg) reg.update();
+            });
+        }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+</body>
+</html>
+
+

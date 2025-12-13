@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="app_title">IIT Madras Zanzibar Water Management</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700">
+    <link rel="icon" href="IITMZ_Logo.ico" type="image/x-icon">
+    <link rel="manifest" href="/IITMZ_WDN/manifest.json">
+    <!-- Load Google Charts Library -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <!-- New Translation System -->
+    <script src="translation-manager.js"></script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            text-align: center;
+            background-image: url('IITMZ.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 20px;
+        }
+        /* Hide ALL browser translate UI - aggressive selectors */
+        [role="banner"],
+        .goog-te-banner-frame,
+        .goog-te-balloon-frame,
+        #goog-gt-tt,
+        .skiptranslate,
+        .goog-te-notranslate,
+        .notranslate,
+        iframe[name*="google"],
+        div[id*="google"],
+        body > div:first-child,
+        html > div:first-child {
+            display: none !important;
+        }
+        html {
+            top: 0 !important;
+            margin-top: 0 !important;
+        }
+        .language-selector-header {
+            background-color: rgba(0, 123, 255, 0.9);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 100;
+        }
+        .language-selector-header label {
+            font-weight: bold;
+            font-size: 14px;
+            margin: 0;
+            color: white;
+        }
+        .language-selector-header select {
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .language-selector-header select option {
+            background-color: #007bff;
+            color: white;
+        }
+        .language-selector-header select:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        h1, h2 { color: #333; }
+        .header {
+            background-color: rgba(0, 123, 255, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .header h1 {
+            color: white;
+            margin: 0;
+            flex: 1;
+            text-align: center;
+            min-width: 200px;
+        }
+        .back-button {
+            padding: 8px 15px;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            order: -1;
+        }
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .card {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .card-header {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 5px 5px 0 0;
+        }
+        .value-box {
+            border: 2px solid #ccc;
+            padding: 10px;
+            font-size: 40px;
+            font-weight: bold;
+            color: #333;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .timestamp {
+            font-size: 12px;
+            color: #777;
+            margin-top: 10px;
+        }
+        .indicator {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-top: 10px;
+            background: gray;
+            border: 1px solid black;
+            transition: all 0.5s ease;
+        }
+        .section-header {
+            width: 100%;
+            margin: 20px 0 10px;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 5px;
+            padding: 10px;
+            margin: 20px auto;
+            max-width: 90%;
+        }
+        .footer {
+            margin-top: 30px;
+            color: #777;
+            font-size: 14px;
+        }
+        #chart_container {
+            position: relative;
+            padding: 5px 2px;
+            background-color: rgba(249, 249, 249, 0.95);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            height: 400px;
+            min-height: 300px;
+            box-sizing: border-box;
+        }
+        #level_chart {
+            width: 100% !important;
+            height: 100% !important;
+            overflow: hidden !important;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .header {
+                padding: 12px;
+                margin-bottom: 15px;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .header h1 {
+                font-size: 18px;
+                margin: 0;
+                order: 2;
+            }
+            .back-button {
+                padding: 6px 12px;
+                font-size: 14px;
+                order: 1;
+            }
+            .container {
+                gap: 10px;
+            }
+            .card {
+                width: 100%;
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            .card-header {
+                padding: 8px;
+                font-size: 16px;
+                display: block;
+            }
+            .value-box {
+                font-size: 32px;
+                padding: 8px;
+            }
+            .section-header {
+                font-size: 18px;
+                padding: 8px;
+                margin: 15px auto;
+                max-width: 95%;
+            }
+            #chart_container {
+                height: 300px;
+                min-height: 250px;
+                max-height: 400px;
+                padding: 3px;
+            }
+            .timestamp {
+                font-size: 11px;
+            }
+            select, input[type="datetime-local"], input[type="color"], button {
+                font-size: 14px !important;
+                padding: 8px !important;
+            }
+            input[type="color"] {
+                width: 40px !important;
+                height: 35px !important;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+            .header {
+                padding: 12px;
+                margin-bottom: 10px;
+            }
+            .header h1 {
+                font-size: 16px;
+            }
+            .card {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            .card-header {
+                padding: 6px;
+                font-size: 14px;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .value-box {
+                font-size: 28px;
+                padding: 6px;
+            }
+            .section-header {
+                font-size: 16px;
+                padding: 6px;
+                margin: 12px auto;
+            }
+            #chart_container {
+                height: 250px;
+                min-height: 200px;
+                max-height: 350px;
+            }
+            select, input[type="datetime-local"], input[type="color"], button {
+                font-size: 12px !important;
+            }
+            input[type="color"] {
+                width: 35px !important;
+                height: 30px !important;
+            }
+        }
+        @media (max-width: 360px) {
+            .header h1 {
+                font-size: 14px;
+            }
+            .card {
+                padding: 10px;
+            }
+            .value-box {
+                font-size: 24px;
+            }
+            #chart_container {
+                height: 200px;
+                min-height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector-header">
+        <label data-i18n="language_label">Language:</label>
+        <select id="language-select" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="ta">Tamil</option>
+            <option value="te">Telugu</option>
+            <option value="ar">العربية</option>
+            <option value="sw">Swahili</option>
+        </select>
+    </div>
+
+    <div class="header">
+        <button class="back-button" onclick="goBack()" data-i18n="back">← Back</button>
+        <h1 data-i18n="water_management"></h1>
+    </div>
+
+    <!-- Sensors Section -->
+    <h2 class="section-header" data-i18n="water_level_monitoring">IITMZ Water Management</h2>
+    <div class="container" id="sensors-container">
+        <!-- Reservoir Sensor -->
+        <div class="card">
+            <div class="card-header" data-i18n="reservoir">Reservoir</div>
+            <div class="value-box" id="Reservoir_cm">-- cm</div><br>
+            <div class="value-box" id="Reservoir_feet">--</div>
+            <div class="timestamp" id="Reservoir_time" data-i18n="waiting_for_updates">Waiting for updates...</div>
+            <div class="indicator" id="Reservoir_indicator"></div>
+        </div>
+
+        <!-- Reservoir History Graph Card -->
+        <div class="card" style="width: 100%">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span data-i18n="reservoir">Reservoir</span> <span data-i18n="history">History</span>
+                <select id="days-selector" style="padding: 5px 8px; border-radius: 3px; border: 1px solid #ccc; background: white; color: #333;">
+                    <option value="1" data-i18n="day_1">1 Day</option>
+                    <option value="2" data-i18n="day_2">2 Days</option>
+                    <option value="3" data-i18n="day_3">3 Days</option>
+                    <option value="4" data-i18n="day_4">4 Days</option>
+                    <option value="5" data-i18n="day_5">5 Days</option>
+                    <option value="6" data-i18n="day_6">6 Days</option>
+                    <option value="7" data-i18n="day_7">7 Days</option>
+                    <option value="custom" data-i18n="custom_range">Custom Range</option>
+                </select>
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+                    <label style="font-size: 14px; font-weight: bold;" data-i18n="line_color">Graph Line Color</label>
+                    <input type="color" id="line-color-picker" value="#28a745" style="width: 50px; height: 40px; border: 1px solid #ccc; border-radius: 3px; cursor: pointer;">
+                </div>
+            </div>
+            <!-- Custom Date Range Section - Hidden by default -->
+            <div id="custom-range-section" style="padding: 15px; background-color: #f9f9f9; margin: 10px 0; border-radius: 5px; display: none;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center;">
+                    <div>
+                        <label style="font-size: 12px;" data-i18n="from">From:</label><br>
+                        <input type="datetime-local" id="custom-start-date" style="padding: 8px; border: 1px solid #ccc; border-radius: 3px;">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px;" data-i18n="to">To:</label><br>
+                        <input type="datetime-local" id="custom-end-date" style="padding: 8px; border: 1px solid #ccc; border-radius: 3px;">
+                    </div>
+                    <div style="margin-top: 18px;">
+                        <button onclick="fetchCustomDateRange()" style="padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;" data-i18n="fetch_data">Fetch Data</button>
+                    </div>
+                </div>
+            </div>
+            <div id="chart_container" style="width: 100%; min-height: 300px; max-height: 600px; margin-top: 20px;">
+                <div id="level_chart"></div>
+            </div>
+            <div class="timestamp" id="chart_update_time" data-i18n="waiting_for_history">Waiting for history data...</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 IIT Madras Zanzibar Water Management System</p>
+    </div>
+
+    <script>
+        function changeLanguage(lang) {
+            translationManager.setLanguage(lang);
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // Initialize language on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
+            if (document.getElementById('language-select')) {
+                document.getElementById('language-select').value = savedLanguage;
+            }
+            translationManager.setLanguage(savedLanguage);
+        });
+
+        const sensorChannels = {
+            Reservoir: {
+                channelID: "3132083",
+                apiKey: "50S4XP3WORJWBWQJ",
+                field: "field3",
+                isInteger: true,
+                limits: { warning: 150, danger: 60 },
+                name: "Reservoir"
+            }
+        };
+
+        function goBack() {
+            window.location.href = "index.html";
+        }
+
+        function timeAgo(timestamp) {
+            const now = new Date();
+            const past = new Date(timestamp);
+            const diffMs = now - past;
+            const diffMinutes = Math.floor(diffMs / (1000 * 60));
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            if (diffMinutes < 1) return "Just now";
+            if (diffMinutes < 60) return `${diffMinutes} min ago`;
+            return `${diffHours} hour(s) ago`;
+        }
+
+        function cmToFeetInches(cm) {
+            const inches = cm / 2.54;
+            const feet = Math.floor(inches / 12);
+            const remainingInches = Math.round(inches % 12);
+            return `${feet} ft ${remainingInches} in`;
+        }
+
+        function updateIndicator(sensor, value) {
+            const indicator = document.getElementById(sensor + "_indicator");
+            if (!indicator) return;
+            const limits = sensorChannels[sensor].limits;
+            if (!limits) return;
+            if (value <= limits.danger) {
+                indicator.style.background = "red";
+            } else if (value <= limits.warning) {
+                indicator.style.background = "yellow";
+            } else {
+                indicator.style.background = "green";
+            }
+        }
+
+        async function fetchThingSpeakData(entityId, details) {
+            const url = `https://api.thingspeak.com/channels/${details.channelID}/feeds.json?api_key=${details.apiKey}&results=20`;
+            try {
+                const response = await fetch(url, { method: 'GET', cache: 'no-cache' });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const data = await response.json();
+                if (!data || !data.feeds || data.feeds.length === 0) return;
+                const feeds = data.feeds;
+                let lastValidValue = "--";
+                let lastUpdated = "No updates";
+                for (let i = feeds.length - 1; i >= 0; i--) {
+                    let rawValue = feeds[i][details.field];
+                    if (rawValue === null || rawValue === undefined || rawValue === "") continue;
+                    let value = parseFloat(rawValue);
+                    if (!isNaN(value)) {
+                        lastValidValue = value;
+                        lastUpdated = feeds[i].created_at;
+                        break;
+                    }
+                }
+                if (lastValidValue !== "--") {
+                    const isSensor = sensorChannels[entityId] !== undefined;
+                    const formattedValue = (isSensor && details.isInteger) ? Math.round(lastValidValue) : parseFloat(lastValidValue).toFixed(2);
+                    if (isSensor) {
+                        const cmElement = document.getElementById(entityId + "_cm");
+                        const feetElement = document.getElementById(entityId + "_feet");
+                        const timeElement = document.getElementById(entityId + "_time");
+                        if (cmElement) cmElement.innerText = `${formattedValue} cm`;
+                        if (feetElement) feetElement.innerText = cmToFeetInches(formattedValue);
+                        if (timeElement) timeElement.innerText = "Updated " + timeAgo(lastUpdated);
+                        updateIndicator(entityId, formattedValue);
+                    }
+                }
+            } catch (error) {
+                console.error(`Error fetching data for ${entityId}:`, error);
+            }
+        }
+
+        function updateAllData() {
+            Object.keys(sensorChannels).forEach(sensor => fetchThingSpeakData(sensor, sensorChannels[sensor]));
+        }
+
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(initializeCharts);
+        
+        let Chart;
+        let ChartData;
+        let isCustomRange = false;
+
+        function initializeCharts() {
+            ChartData = new google.visualization.DataTable();
+            ChartData.addColumn('datetime', 'Time');
+            ChartData.addColumn('number', 'Reservoir (cm)');
+            ChartData.addColumn({type: 'string', role: 'tooltip'});
+            
+            const isMobile = window.innerWidth <= 768;
+            const chartAreaConfig = isMobile ? { left: 45, top: 35, width: '80%', height: '65%' } 
+                                              : { left: 60, top: 40, width: '85%', height: '70%' };
+            
+            const ChartOptions = {
+                title: 'Reservoir Water Level History',
+                titleTextStyle: { color: '#333', fontSize: isMobile ? 12 : 14, bold: true },
+                legend: { position: 'bottom' },
+                hAxis: { title: 'Time', format: 'HH:mm', gridlines: { count: isMobile ? 4 : 8 }, titleTextStyle: { fontSize: isMobile ? 10 : 12 }, textStyle: { fontSize: isMobile ? 9 : 11 } },
+                vAxis: { title: 'Water Level (cm)', minValue: 0, titleTextStyle: { fontSize: isMobile ? 10 : 12 }, textStyle: { fontSize: isMobile ? 9 : 11 } },
+                colors: [localStorage.getItem('graphLineColor') || '#28a745'],
+                lineWidth: 3,
+                pointSize: 5,
+                chartArea: chartAreaConfig,
+                animation: { startup: true, duration: 1000, easing: 'out' }
+            };
+            
+            Chart = new google.visualization.LineChart(document.getElementById('level_chart'));
+            Chart.draw(ChartData, ChartOptions);
+            
+            document.getElementById('days-selector').addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    // Show custom range inputs
+                    document.getElementById('custom-range-section').style.display = 'block';
+                    const savedCustomRange = localStorage.getItem('customDateRange');
+                    if (savedCustomRange) {
+                        const ranges = JSON.parse(savedCustomRange);
+                        document.getElementById('custom-start-date').value = ranges.start;
+                        document.getElementById('custom-end-date').value = ranges.end;
+                        fetchCustomDateRange();
+                    }
+                } else {
+                    // Hide custom range inputs and fetch preset
+                    document.getElementById('custom-range-section').style.display = 'none';
+                    isCustomRange = false;
+                    localStorage.removeItem('customDateRange');
+                    fetchHistoricalData();
+                }
+            });
+            
+            // Color picker event listener
+            const colorPicker = document.getElementById('line-color-picker');
+            if (colorPicker) {
+                colorPicker.addEventListener('change', function() {
+                    localStorage.setItem('graphLineColor', this.value);
+                    if (isCustomRange) {
+                        fetchCustomDateRange();
+                    } else {
+                        fetchHistoricalData();
+                    }
+                });
+            }
+            
+            // Check if custom date range was saved
+            const savedCustomRange = localStorage.getItem('customDateRange');
+            if (savedCustomRange) {
+                const ranges = JSON.parse(savedCustomRange);
+                document.getElementById('custom-start-date').value = ranges.start;
+                document.getElementById('custom-end-date').value = ranges.end;
+                document.getElementById('days-selector').value = 'custom';
+                document.getElementById('custom-range-section').style.display = 'block';
+                isCustomRange = true;
+                fetchCustomDateRange();
+            } else {
+                fetchHistoricalData();
+            }
+        }
+        
+        function getResponsiveChartOptions(title, selectedDays = 1) {
+            const isMobile = window.innerWidth <= 768;
+            const dayText = selectedDays === 1 ? 'Day' : 'Days';
+            const lineColor = localStorage.getItem('graphLineColor') || '#28a745';
+            
+            return {
+                title: title,
+                titleTextStyle: { color: '#333', fontSize: isMobile ? 12 : 14, bold: true },
+                legend: { position: 'bottom' },
+                hAxis: { title: 'Time', format: selectedDays === 1 ? 'HH:mm' : 'dd/MM HH:mm', gridlines: { count: isMobile ? 4 : 8 }, titleTextStyle: { fontSize: isMobile ? 10 : 12 }, textStyle: { fontSize: isMobile ? 9 : 11 } },
+                vAxis: { title: 'Water Level (cm)', minValue: 0, titleTextStyle: { fontSize: isMobile ? 10 : 12 }, textStyle: { fontSize: isMobile ? 9 : 11 } },
+                colors: [lineColor],
+                lineWidth: 3,
+                pointSize: 5,
+                chartArea: isMobile ? { left: 40, top: 30, width: '92%', height: '70%' } : { left: 50, top: 35, width: '95%', height: '75%' },
+                animation: { duration: 1000, easing: 'out' }
+            };
+        }
+
+        async function fetchHistoricalData() {
+            try {
+                const Config = sensorChannels.Reservoir;
+                const selectedDays = parseInt(document.getElementById('days-selector').value) || 1;
+                
+                const endDate = new Date();
+                const startDate = new Date(endDate.getTime() - (selectedDays * 24 * 60 * 60 * 1000));
+                
+                const startStr = `${startDate.getUTCFullYear()}-${(startDate.getUTCMonth()+1).toString().padStart(2, '0')}-${startDate.getUTCDate().toString().padStart(2, '0')}%20${startDate.getUTCHours().toString().padStart(2, '0')}:${startDate.getUTCMinutes().toString().padStart(2, '0')}:${startDate.getUTCSeconds().toString().padStart(2, '0')}`;
+                const endStr = `${endDate.getUTCFullYear()}-${(endDate.getUTCMonth()+1).toString().padStart(2, '0')}-${endDate.getUTCDate().toString().padStart(2, '0')}%20${endDate.getUTCHours().toString().padStart(2, '0')}:${endDate.getUTCMinutes().toString().padStart(2, '0')}:${endDate.getUTCSeconds().toString().padStart(2, '0')}`;
+                
+                const url = `https://api.thingspeak.com/channels/${Config.channelID}/feeds.json?api_key=${Config.apiKey}&start=${startStr}&end=${endStr}&results=8000`;
+                
+                const response = await fetch(url, { cache: 'no-cache' });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const data = await response.json();
+                
+                if (!data || !data.feeds || data.feeds.length === 0) {
+                    const dayText = selectedDays === 1 ? 'Day' : 'Days';
+                    document.getElementById('chart_update_time').innerText = `No data available in the last ${selectedDays} ${dayText}. Data collection may have started recently.`;
+                    ChartData.removeRows(0, ChartData.getNumberOfRows());
+                    Chart.draw(ChartData, getResponsiveChartOptions(`Reservoir Water Level History (${selectedDays} ${dayText}) - No Data`, selectedDays));
+                    return;
+                }
+                
+                const dayText = selectedDays === 1 ? 'Day' : 'Days';
+                const Rows = [];
+                
+                data.feeds.forEach(feed => {
+                    const date = new Date(feed.created_at);
+                    const Value = feed[Config.field] ? parseFloat(feed[Config.field]) : null;
+                    if (Value !== null) {
+                        const Tooltip = `${date.toLocaleDateString()} ${date.toLocaleTimeString()} - Level: ${Math.round(Value)} cm`;
+                        Rows.push([date, Value, Tooltip]);
+                    }
+                });
+                
+                ChartData.removeRows(0, ChartData.getNumberOfRows());
+                ChartData.addRows(Rows);
+                
+                const Options = getResponsiveChartOptions(`Reservoir Water Level History (${selectedDays} ${dayText})`, selectedDays);
+                Chart.draw(ChartData, Options);
+                
+                const currentTime = new Date().toLocaleTimeString();
+                document.getElementById('chart_update_time').innerText = `Chart updated: ${currentTime} • ${Rows.length} data points • ${selectedDays} ${dayText}`;
+                    
+            } catch (error) {
+                console.error("Error fetching historical data:", error);
+                document.getElementById('chart_update_time').innerText = `Error loading chart data: ${error.message}`;
+            }
+        }
+
+        // Fetch data for custom date range (handles 8000 point limit by making multiple calls)
+        async function fetchCustomDateRange() {
+            const startInput = document.getElementById('custom-start-date').value;
+            const endInput = document.getElementById('custom-end-date').value;
+            
+            if (!startInput || !endInput) {
+                alert('Please select both start and end dates');
+                return;
+            }
+            
+            try {
+                document.getElementById('chart_update_time').innerText = 'Fetching data for custom range...';
+                
+                const Config = sensorChannels.Reservoir;
+                const startDate = new Date(startInput);
+                const endDate = new Date(endInput);
+                
+                if (startDate >= endDate) {
+                    alert('Start date must be before end date');
+                    return;
+                }
+                
+                let allRows = [];
+                let currentStart = new Date(startDate);
+                
+                // Fetch data in chunks to handle 8000 point limit
+                while (currentStart < endDate) {
+                    // Calculate chunk end (7 days at a time to stay under 8000 points)
+                    const chunkEnd = new Date(currentStart.getTime() + (7 * 24 * 60 * 60 * 1000));
+                    const actualEnd = chunkEnd < endDate ? chunkEnd : endDate;
+                    
+                    const startStr = `${currentStart.getUTCFullYear()}-${(currentStart.getUTCMonth()+1).toString().padStart(2, '0')}-${currentStart.getUTCDate().toString().padStart(2, '0')}%20${currentStart.getUTCHours().toString().padStart(2, '0')}:${currentStart.getUTCMinutes().toString().padStart(2, '0')}:${currentStart.getUTCSeconds().toString().padStart(2, '0')}`;
+                    const endStr = `${actualEnd.getUTCFullYear()}-${(actualEnd.getUTCMonth()+1).toString().padStart(2, '0')}-${actualEnd.getUTCDate().toString().padStart(2, '0')}%20${actualEnd.getUTCHours().toString().padStart(2, '0')}:${actualEnd.getUTCMinutes().toString().padStart(2, '0')}:${actualEnd.getUTCSeconds().toString().padStart(2, '0')}`;
+                    
+                    const url = `https://api.thingspeak.com/channels/${Config.channelID}/feeds.json?api_key=${Config.apiKey}&start=${startStr}&end=${endStr}&results=8000`;
+                    
+                    console.log(`Fetching chunk from ${startStr} to ${endStr}`);
+                    const response = await fetch(url, { cache: 'no-cache' });
+                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                    
+                    const data = await response.json();
+                    
+                    if (data && data.feeds && data.feeds.length > 0) {
+                        data.feeds.forEach(feed => {
+                            const date = new Date(feed.created_at);
+                            const Value = feed[Config.field] ? parseFloat(feed[Config.field]) : null;
+                            if (Value !== null) {
+                                const Tooltip = `${date.toLocaleDateString()} ${date.toLocaleTimeString()} - Level: ${Math.round(Value)} cm`;
+                                allRows.push([date, Value, Tooltip]);
+                            }
+                        });
+                    }
+                    
+                    currentStart = new Date(actualEnd.getTime() + 1000); // Move to next chunk
+                }
+                
+                // Remove duplicates and sort by date
+                const uniqueRows = Array.from(new Set(allRows.map(r => r[0].getTime())))
+                    .map(time => allRows.find(r => r[0].getTime() === time))
+                    .sort((a, b) => a[0] - b[0]);
+                
+                if (uniqueRows.length === 0) {
+                    document.getElementById('chart_update_time').innerText = 'No data found for the selected date range';
+                    return;
+                }
+                
+                // Save custom range to localStorage
+                localStorage.setItem('customDateRange', JSON.stringify({
+                    start: startInput,
+                    end: endInput
+                }));
+                isCustomRange = true;
+                
+                // Update Chart
+                ChartData.removeRows(0, ChartData.getNumberOfRows());
+                ChartData.addRows(uniqueRows);
+                
+                const Options = getResponsiveChartOptions(`Reservoir Water Level History (Custom Range)`, 1);
+                Chart.draw(ChartData, Options);
+                
+                const currentTime = new Date().toLocaleTimeString();
+                document.getElementById('chart_update_time').innerText = 
+                    `Chart updated: ${currentTime} • ${uniqueRows.length} data points • Custom range: ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
+                    
+            } catch (error) {
+                console.error("Error fetching custom date range:", error);
+                document.getElementById('chart_update_time').innerText = `Error: ${error.message}`;
+            }
+        }
+
+        updateAllData();
+        setInterval(updateAllData, 1000);
+        setInterval(() => {
+            // Only auto-refresh if not using custom date range
+            if (!isCustomRange) {
+                fetchHistoricalData();
+            }
+        }, 60000);
+    </script>
+</body>
+</html>

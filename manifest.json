@@ -1,0 +1,49 @@
+{
+  "name": "IITMZ Water Management",
+  "short_name": "IITMZ Water Mgmt",
+  "start_url": "/IITMZ_WDN/",
+  "scope": "/IITMZ_WDN/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "description": "Real-time water level monitoring system for IIT Madras Zanzibar",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    {
+      "src": "/IITMZ_WDN/IITMZ_Logo_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/IITMZ_WDN/IITMZ_Logo_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/IITMZ_WDN/IITMZ.jpg",
+      "sizes": "540x720",
+      "type": "image/jpeg"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Reservoir",
+      "short_name": "Reservoir",
+      "description": "View Reservoir water levels",
+      "url": "/IITMZ_WDN/reservoir.html",
+      "icons": [{ "src": "/IITMZ_WDN/IITMZ_Logo_192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Overhead Tank",
+      "short_name": "Tank",
+      "description": "View Overhead Tank water levels",
+      "url": "/IITMZ_WDN/overhead-tank.html",
+      "icons": [{ "src": "/IITMZ_WDN/IITMZ_Logo_192.png", "sizes": "192x192" }]
+    }
+  ]
+}

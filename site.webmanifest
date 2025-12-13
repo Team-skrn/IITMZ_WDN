@@ -1,0 +1,22 @@
+{
+  "name": "IIT Madras Zanzibar Water Management",
+  "short_name": "IITM Water Mgmt",
+  "icons": [
+    {
+      "src": "/IITMZ_WDN/IITMZ_Logo_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/IITMZ_WDN/IITMZ_Logo_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#007bff",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/IITMZ_WDN/"
+}
