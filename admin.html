@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Water Management Configuration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #764ba2;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .admin-container {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-container.active {
+            display: block;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+        }
+
+        .admin-header h1 {
+            color: #333;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #b71c1c;
+        }
+
+        .pages-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .add-page-btn {
+            padding: 8px 16px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .add-page-btn:hover {
+            background: #45a049;
+        }
+
+        .pages-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .page-card {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn-small:hover {
+            background: #764ba2;
+        }
+
+        .btn-delete {
+            background: #d32f2f;
+        }
+
+        .btn-delete:hover {
+            background: #b71c1c;
+        }
+
+        .btn-up, .btn-down {
+            background: #ff9800;
+        }
+
+        .btn-up:hover, .btn-down:hover {
+            background: #e68900;
+        }
+
+        .page-form {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 2px solid #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group-small {
+            margin-bottom: 0;
+        }
+
+        .form-group-small label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .form-group-small input, .form-group-small select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .sensors-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .sensors-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .sensors-list {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .sensor-item {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .sensor-info {
+            flex: 1;
+        }
+
+        .sensor-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-tiny {
+            padding: 4px 8px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .btn-tiny:hover {
+            background: #764ba2;
+        }
+
+        .btn-tiny-delete {
+            background: #d32f2f;
+        }
+
+        .btn-tiny-delete:hover {
+            background: #b71c1c;
+        }
+
+        .add-sensor-form {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #4caf50;
+            margin-top: 10px;
+        }
+
+        .add-sensor-form.hidden {
+            display: none;
+        }
+
+        .form-row-inline {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .form-group-inline {
+            margin-bottom: 0;
+        }
+
+        .form-group-inline label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 3px;
+            font-weight: 500;
+        }
+
+        .form-group-inline input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .btn-add-sensor {
+            padding: 6px 12px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            align-self: flex-end;
+        }
+
+        .btn-add-sensor:hover {
+            background: #45a049;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-save:hover {
+            background: #45a049;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #999;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-cancel:hover {
+            background: #777;
+        }
+
+        .export-section {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+            margin-top: 30px;
+        }
+
+        .export-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-export {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-export:hover {
+            background: #764ba2;
+        }
+
+        .export-code {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .copy-btn {
+            padding: 8px 16px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #e68900;
+        }
+
+        .success-message {
+            color: #4caf50;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .edit-form {
+            display: none;
+        }
+
+        .edit-form.active {
+            display: block;
+        }
+
+        .view-form {
+            display: block;
+        }
+
+        .view-form.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Container -->
+    <div class="login-container" id="loginContainer">
+        <h1>🔐 Admin Panel</h1>
+        <div class="form-group">
+            <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" placeholder="Enter admin password">
+        </div>
+        <button class="login-btn" onclick="authenticateAdmin()">Login</button>
+        <div class="error-message" id="loginError"></div>
+    </div>
+
+    <!-- Admin Container -->
+    <div class="admin-container" id="adminContainer">
+        <div class="admin-header">
+            <h1>⚙️ Configuration Manager</h1>
+            <button class="logout-btn" style="background: #ff9800;" onclick="importConfigFromFile()" title="Load existing config">📂 Import Config</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- Pages Management -->
+        <div class="pages-section">
+            <div class="section-title">
+                <span>📄 Pages</span>
+                <button class="add-page-btn" onclick="openAddPageForm()">+ Add Page</button>
+            </div>
+
+            <div id="pagesList" class="pages-list"></div>
+
+            <!-- Add/Edit Page Form Modal -->
+            <div class="modal" id="pageFormModal">
+                <div class="modal-content">
+                    <div class="modal-title" id="pageFormTitle">Add New Page</div>
+                    <form id="pageForm" onsubmit="savePage(event)">
+                        <div class="form-group-small">
+                            <label>Page ID (unique)</label>
+                            <input type="text" id="pageId" placeholder="e.g., reservoir" required>
+                        </div>
+                        <div class="form-group-small" style="margin-top: 10px;">
+                            <label>Display Name</label>
+                            <input type="text" id="pageName" placeholder="e.g., Reservoir" required>
+                        </div>
+                        <div class="form-group-small" style="margin-top: 10px;">
+                            <label>Title</label>
+                            <input type="text" id="pageTitle" placeholder="e.g., Reservoir Water Level Monitoring" required>
+                        </div>
+                        <div class="form-group-small" style="margin-top: 10px;">
+                            <label>Icon (emoji - optional)</label>
+                            <input type="text" id="pageIcon" placeholder="e.g., 💧 (paste emoji or leave blank)">
+                        </div>
+
+                        <div class="sensors-section">
+                            <div class="sensors-title">Sensors</div>
+                            <div id="sensorsList" class="sensors-list"></div>
+                            <button type="button" class="add-sensor-btn" onclick="openAddSensorForm()" style="padding: 8px 16px; background: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;">+ Add Sensor</button>
+
+                            <div class="add-sensor-form hidden" id="addSensorForm">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                    <div class="form-group-inline">
+                                        <label>Sensor Key (code name)</label>
+                                        <input type="text" id="newSensorKey" placeholder="e.g., Reservoir">
+                                    </div>
+                                    <div class="form-group-inline">
+                                        <label>Display Name</label>
+                                        <input type="text" id="newSensorName" placeholder="e.g., Reservoir Level">
+                                    </div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                    <div class="form-group-inline">
+                                        <label>Channel ID</label>
+                                        <input type="text" id="newSensorChannelID" placeholder="e.g., 3132083">
+                                    </div>
+                                    <div class="form-group-inline">
+                                        <label>API Key</label>
+                                        <input type="text" id="newSensorApiKey" placeholder="API key">
+                                    </div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                    <div class="form-group-inline">
+                                        <label>Field (e.g., field3)</label>
+                                        <input type="text" id="newSensorField" placeholder="field3">
+                                    </div>
+                                    <div class="form-group-inline">
+                                        <label>Is Integer?</label>
+                                        <select id="newSensorIsInteger" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 3px;">
+                                            <option value="true">Yes</option>
+                                            <option value="false">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px;">
+                                    <div class="form-group-inline">
+                                        <label>Warning Limit</label>
+                                        <input type="number" id="newSensorWarning" placeholder="150">
+                                    </div>
+                                    <div class="form-group-inline">
+                                        <label>Danger Limit</label>
+                                        <input type="number" id="newSensorDanger" placeholder="60">
+                                    </div>
+                                    <button type="button" class="btn-add-sensor" onclick="addSensorToForm()" style="align-self: flex-end;">Add</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-buttons">
+                            <button type="button" class="btn-cancel" onclick="closePageForm()">Cancel</button>
+                            <button type="submit" class="btn-save">Save Page</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+            <h3>📥 Export Configuration</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Download the config.js file and replace it in your GitHub repository.</p>
+            <div class="export-buttons">
+                <button class="btn-export" onclick="downloadConfig()" style="background: #4caf50;">📥 Download config.js</button>
+                <button class="btn-export" onclick="showConfigCode()">📋 Show Code</button>
+            </div>
+            <div class="export-code" id="exportCode" style="display: none;"></div>
+            <button class="copy-btn" id="copyBtn" style="display: none;" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+            <div class="success-message" id="successMessage" style="display: none;">✅ Copied to clipboard!</div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // Admin password - CHANGE THIS!
+        const ADMIN_PASSWORD = 'SmartWater@123';
+
+        let currentConfig = null;
+        let editingPageId = null;
+        let tempSensors = [];
+
+        function authenticateAdmin() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('adminContainer').classList.add('active');
+                loadConfig();
+            } else {
+                document.getElementById('loginError').textContent = '❌ Invalid password';
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                document.getElementById('loginContainer').style.display = 'block';
+                document.getElementById('adminContainer').classList.remove('active');
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('loginError').textContent = '';
+            }
+        }
+
+        function importConfigFromFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.js,.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        let content = event.target.result;
+                        let json = null;
+
+                        // Method 1: Extract from const appConfig = {...}
+                        const match1 = content.match(/const\s+appConfig\s*=\s*({[\s\S]*?});\s*(?:\/\/|if\(typeof|$)/);
+                        if (match1) {
+                            try {
+                                json = JSON.parse(match1[1]);
+                            } catch (e) {
+                                console.log('Method 1 failed');
+                            }
+                        }
+
+                        // Method 2: Direct JSON parse
+                        if (!json) {
+                            try {
+                                json = JSON.parse(content);
+                            } catch (e) {
+                                console.log('Method 2 failed');
+                            }
+                        }
+
+                        if (json && json.pages) {
+                            // Convert object format to array format
+                            currentConfig = {
+                                appTitle: json.appTitle || 'IITMZ Water Management',
+                                defaultLanguage: json.defaultLanguage || 'en',
+                                pages: Object.entries(json.pages).map(([key, page]) => ({
+                                    id: page.id || key,
+                                    displayName: page.displayName || key,
+                                    title: page.title || '',
+                                    icon: page.icon || '📄',
+                                    sensors: Object.entries(page.sensors).map(([sensorKey, sensor]) => ({
+                                        key: sensorKey,
+                                        displayName: sensor.displayName || sensorKey,
+                                        channelID: sensor.channelID,
+                                        apiKey: sensor.apiKey,
+                                        field: sensor.field,
+                                        isInteger: sensor.isInteger !== false,
+                                        limits: sensor.limits || { warning: 150, danger: 60 }
+                                    }))
+                                }))
+                            };
+                            renderPages();
+                            alert('✅ Configuration imported! (' + currentConfig.pages.length + ' pages found)');
+                        } else {
+                            alert('❌ Invalid format. Expected config.js with pages object.');
+                        }
+                    } catch (error) {
+                        alert('❌ Error: ' + error.message);
+                        console.error(error);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function loadConfig() {
+            // Try to load from global appConfig if available
+            if (typeof window.appConfig !== 'undefined' && window.appConfig.pages) {
+                // Convert object format to array format for easier manipulation
+                currentConfig = {
+                    appTitle: window.appConfig.appTitle || 'IITMZ Water Management',
+                    defaultLanguage: window.appConfig.defaultLanguage || 'en',
+                    pages: Object.values(window.appConfig.pages).map(page => ({
+                        id: page.id,
+                        displayName: page.displayName,
+                        title: page.title,
+                        icon: page.icon,
+                        sensors: Object.entries(page.sensors).map(([key, sensor]) => ({
+                            key: key,
+                            displayName: sensor.displayName,
+                            channelID: sensor.channelID,
+                            apiKey: sensor.apiKey,
+                            field: sensor.field,
+                            isInteger: sensor.isInteger !== false,
+                            limits: sensor.limits || { warning: 150, danger: 60 }
+                        }))
+                    }))
+                };
+            } else {
+                // Default empty config
+                currentConfig = {
+                    appTitle: 'IITMZ Water Management',
+                    defaultLanguage: 'en',
+                    pages: []
+                };
+            }
+            renderPages();
+        }
+
+        function renderPages() {
+            const pagesList = document.getElementById('pagesList');
+            pagesList.innerHTML = '';
+
+            currentConfig.pages.forEach((page, index) => {
+                const pageCard = document.createElement('div');
+                pageCard.className = 'page-card';
+                pageCard.innerHTML = `
+                    <div class="page-header">
+                        <div class="page-title">${page.name}</div>
+                        <div class="page-actions">
+                            ${index > 0 ? `<button class="btn-small btn-up" onclick="movePage(${index}, -1)">⬆️ Up</button>` : ''}
+                            ${index < currentConfig.pages.length - 1 ? `<button class="btn-small btn-down" onclick="movePage(${index}, 1)">⬇️ Down</button>` : ''}
+                            <button class="btn-small" onclick="editPage(${index})">✏️ Edit</button>
+                            <button class="btn-small btn-delete" onclick="deletePage(${index})">🗑️ Delete</button>
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; color: #666;">
+                        <div>ID: <strong>${page.id}</strong></div>
+                        <div>Sensors: <strong>${page.sensors.length}</strong></div>
+                    </div>
+                `;
+                pagesList.appendChild(pageCard);
+            });
+        }
+
+        function openAddPageForm() {
+            editingPageId = null;
+            tempSensors = [];
+            document.getElementById('pageFormTitle').textContent = 'Add New Page';
+            document.getElementById('pageForm').reset();
+            document.getElementById('pageId').disabled = false;
+            document.getElementById('sensorsList').innerHTML = '';
+            document.getElementById('addSensorForm').classList.add('hidden');
+            document.getElementById('pageFormModal').classList.add('active');
+        }
+
+        function openAddSensorForm() {
+            document.getElementById('addSensorForm').classList.toggle('hidden');
+            if (!document.getElementById('addSensorForm').classList.contains('hidden')) {
+                document.getElementById('newSensorKey').focus();
+            }
+        }
+
+        function editPage(index) {
+            const page = currentConfig.pages[index];
+            editingPageId = index;
+            tempSensors = JSON.parse(JSON.stringify(page.sensors));
+
+            document.getElementById('pageFormTitle').textContent = `Edit: ${page.displayName}`;
+            document.getElementById('pageId').value = page.id;
+            document.getElementById('pageId').disabled = true;
+            document.getElementById('pageName').value = page.displayName;
+            document.getElementById('pageTitle').value = page.title;
+            document.getElementById('pageIcon').value = page.icon || '';
+
+            renderSensorsList();
+            document.getElementById('addSensorForm').classList.add('hidden');
+            document.getElementById('pageFormModal').classList.add('active');
+        }
+
+        function renderSensorsList() {
+            const list = document.getElementById('sensorsList');
+            list.innerHTML = '';
+
+            tempSensors.forEach((sensor, index) => {
+                const item = document.createElement('div');
+                item.className = 'sensor-item';
+                item.innerHTML = `
+                    <div class="sensor-info">
+                        <strong>${sensor.displayName}</strong> (${sensor.field})<br>
+                        <small style="color: #999;">Channel: ${sensor.channelID} | Limits: ⚠️ ${sensor.limits.warning} 🔴 ${sensor.limits.danger}</small>
+                    </div>
+                    <div class="sensor-actions">
+                        ${index > 0 ? `<button type="button" class="btn-tiny" onclick="moveSensor(${index}, -1)">⬆️</button>` : ''}
+                        ${index < tempSensors.length - 1 ? `<button type="button" class="btn-tiny" onclick="moveSensor(${index}, 1)">⬇️</button>` : ''}
+                        <button type="button" class="btn-tiny" onclick="editSensor(${index})">✏️</button>
+                        <button type="button" class="btn-tiny btn-tiny-delete" onclick="deleteSensor(${index})">🗑️</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function addSensorToForm() {
+            const key = document.getElementById('newSensorKey').value;
+            const name = document.getElementById('newSensorName').value;
+            const field = document.getElementById('newSensorField').value;
+            const channelID = document.getElementById('newSensorChannelID').value;
+            const apiKey = document.getElementById('newSensorApiKey').value;
+            const isInteger = document.getElementById('newSensorIsInteger').value === 'true';
+            const warning = parseInt(document.getElementById('newSensorWarning').value) || 150;
+            const danger = parseInt(document.getElementById('newSensorDanger').value) || 60;
+
+            if (!key || !name || !field || !channelID || !apiKey) {
+                alert('Please fill in all required fields (Key, Name, Field, Channel ID, API Key)');
+                return;
+            }
+
+            tempSensors.push({
+                key: key,
+                displayName: name,
+                channelID: channelID,
+                apiKey: apiKey,
+                field: field,
+                isInteger: isInteger,
+                limits: { warning: warning, danger: danger }
+            });
+
+            clearSensorForm();
+            renderSensorsList();
+        }
+
+        function clearSensorForm() {
+            document.getElementById('newSensorKey').value = '';
+            document.getElementById('newSensorName').value = '';
+            document.getElementById('newSensorField').value = '';
+            document.getElementById('newSensorChannelID').value = '';
+            document.getElementById('newSensorApiKey').value = '';
+            document.getElementById('newSensorIsInteger').value = 'true';
+            document.getElementById('newSensorWarning').value = '150';
+            document.getElementById('newSensorDanger').value = '60';
+            document.getElementById('addSensorForm').classList.add('hidden');
+        }
+
+        function editSensor(index) {
+            const sensor = tempSensors[index];
+            document.getElementById('newSensorKey').value = sensor.key;
+            document.getElementById('newSensorName').value = sensor.displayName;
+            document.getElementById('newSensorField').value = sensor.field;
+            document.getElementById('newSensorChannelID').value = sensor.channelID;
+            document.getElementById('newSensorApiKey').value = sensor.apiKey;
+            document.getElementById('newSensorIsInteger').value = sensor.isInteger ? 'true' : 'false';
+            document.getElementById('newSensorWarning').value = sensor.limits.warning;
+            document.getElementById('newSensorDanger').value = sensor.limits.danger;
+
+            tempSensors.splice(index, 1);
+            renderSensorsList();
+            document.getElementById('addSensorForm').classList.remove('hidden');
+        }
+
+        function deleteSensor(index) {
+            if (confirm(`Delete sensor "${tempSensors[index].name}"?`)) {
+                tempSensors.splice(index, 1);
+                renderSensorsList();
+            }
+        }
+
+        function moveSensor(index, direction) {
+            if (direction === -1 && index > 0) {
+                [tempSensors[index], tempSensors[index - 1]] = [tempSensors[index - 1], tempSensors[index]];
+            } else if (direction === 1 && index < tempSensors.length - 1) {
+                [tempSensors[index], tempSensors[index + 1]] = [tempSensors[index + 1], tempSensors[index]];
+            }
+            renderSensorsList();
+        }
+
+        function savePage(e) {
+            e.preventDefault();
+
+            const pageData = {
+                id: document.getElementById('pageId').value,
+                displayName: document.getElementById('pageName').value,
+                title: document.getElementById('pageTitle').value,
+                icon: document.getElementById('pageIcon').value || '📄',
+                sensors: {}
+            };
+
+            if (tempSensors.length === 0) {
+                alert('Please add at least one sensor');
+                return;
+            }
+
+            // Convert sensors array to object with key as property name
+            tempSensors.forEach(sensor => {
+                pageData.sensors[sensor.key] = {
+                    displayName: sensor.displayName,
+                    channelID: sensor.channelID,
+                    apiKey: sensor.apiKey,
+                    field: sensor.field,
+                    isInteger: sensor.isInteger,
+                    limits: sensor.limits
+                };
+            });
+
+            if (editingPageId !== null) {
+                currentConfig.pages[editingPageId] = pageData;
+            } else {
+                currentConfig.pages.push(pageData);
+            }
+
+            closePageForm();
+            renderPages();
+        }
+
+        function closePageForm() {
+            document.getElementById('pageFormModal').classList.remove('active');
+        }
+
+        function deletePage(index) {
+            const page = currentConfig.pages[index];
+            if (confirm(`Delete page "${page.displayName}"?`)) {
+                currentConfig.pages.splice(index, 1);
+                renderPages();
+            }
+        }
+
+        function movePage(index, direction) {
+            if (direction === -1 && index > 0) {
+                [currentConfig.pages[index], currentConfig.pages[index - 1]] = [currentConfig.pages[index - 1], currentConfig.pages[index]];
+            } else if (direction === 1 && index < currentConfig.pages.length - 1) {
+                [currentConfig.pages[index], currentConfig.pages[index + 1]] = [currentConfig.pages[index + 1], currentConfig.pages[index]];
+            }
+            renderPages();
+        }
+
+        function generateConfigCode() {
+            // Convert array of pages back to object format
+            const pagesObj = {};
+            currentConfig.pages.forEach(page => {
+                pagesObj[page.id] = {
+                    id: page.id,
+                    displayName: page.displayName,
+                    title: page.title,
+                    icon: page.icon,
+                    sensors: page.sensors
+                };
+            });
+
+            const configCode = `/**
+ * ✅ DYNAMIC PAGE CONFIGURATION
+ * Define all pages, sensors, and API credentials here
+ * Changes here automatically apply to the entire app
+ */
+
+const appConfig = {
+    appTitle: '${currentConfig.appTitle}',
+    defaultLanguage: '${currentConfig.defaultLanguage}',
+    
+    // ✅ All Pages in the App
+    pages: ${JSON.stringify(pagesObj, null, 8)},
+
+    // ✅ Get all page info (for index/hub)
+    getAllPages: function() {
+        return Object.values(this.pages).map(page => ({
+            id: page.id,
+            displayName: page.displayName,
+            icon: page.icon,
+            sensorCount: Object.keys(page.sensors).length
+        }));
+    },
+
+    // ✅ Get specific page config
+    getPage: function(pageId) {
+        return this.pages[pageId] || null;
+    },
+
+    // ✅ Get all sensors for a page
+    getSensorsForPage: function(pageId) {
+        const page = this.getPage(pageId);
+        return page ? page.sensors : {};
+    }
+};
+
+// Make config accessible globally
+if (typeof window !== 'undefined') {
+    window.appConfig = appConfig;
+}
+`;
+            return configCode;
+        }
+
+        function showConfigCode() {
+            const code = generateConfigCode();
+            const exportCode = document.getElementById('exportCode');
+            exportCode.textContent = code;
+            exportCode.style.display = 'block';
+            document.getElementById('copyBtn').style.display = 'inline-block';
+        }
+
+        function copyToClipboard() {
+            const code = document.getElementById('exportCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const msg = document.getElementById('successMessage');
+                msg.style.display = 'block';
+                setTimeout(() => {
+                    msg.style.display = 'none';
+                }, 2000);
+            });
+        }
+
+        function downloadConfig() {
+            const code = generateConfigCode();
+            const blob = new Blob([code], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'config.js';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        async function saveConfigToFile() {
+            const code = generateConfigCode();
+            try {
+                const response = await fetch('http://localhost:3000/api/save-config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ config: code })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('✅ Configuration saved to config.js successfully!');
+                } else {
+                    alert('❌ Error: ' + result.message);
+                }
+            } catch (error) {
+                alert('❌ Cannot connect to server. Make sure the backend is running on http://localhost:3000\n\nYou can still download the config.js and replace it manually.');
+            }
+        }
+
+        // Allow Enter key in password field
+        document.getElementById('adminPassword')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') authenticateAdmin();
+        });
+    </script>
+</body>
+</html>

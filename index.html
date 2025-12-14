@@ -14,6 +14,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="IITM Water Mgmt">
     <link rel="apple-touch-icon" href="IITMZ_Logo_192.png">
+    <script src="config.js"></script>
     
     <style>
         body {
@@ -78,6 +79,7 @@
             border-radius: 5px;
             cursor: pointer;
             display: none;
+            margin: 10px;
         }
         .update-banner {
             position: fixed;
@@ -236,6 +238,126 @@
                 height: auto;
             }
             }
+        
+        /* ✅ Global Alert Settings Modal Styles */
+        .alert-settings-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            cursor: pointer;
+        }
+        
+        .alert-settings-overlay.active {
+            display: block;
+        }
+        
+        .alert-settings-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .alert-settings-modal.active {
+            display: block;
+        }
+        
+        .alert-settings-modal h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.5em;
+        }
+        
+        /* Alert Settings Modal Accordion Styles */
+        .alert-page-accordion {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .alert-page-header {
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            user-select: none;
+        }
+        
+        .alert-page-header:hover {
+            background-color: #0056b3;
+        }
+        
+        .alert-page-content {
+            display: none;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        
+        .alert-page-content.active {
+            display: block;
+        }
+        
+        .sensor-settings {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .sensor-settings label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .sensor-checkbox-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .sensor-checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .threshold-inputs {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .threshold-inputs input[type="number"] {
+            width: 80px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
             
     </style>
     <!-- New Translation System -->
@@ -283,18 +405,62 @@
     <h2></h2>
 
     <h3 data-i18n="select_tank_sump">Select the Tank/Sump</h3>
-    <div class="button-container">
-        <a href="reservoir.html" class="dashboard-button" data-i18n="reservoir">Reservoir</a>
-        <a href="overhead-tank.html" class="dashboard-button" data-i18n="overhead_tank">Overhead Tank</a>
+    <div class="button-container" id="dynamicButtonsContainer">
+        <!-- Dynamically generated from config.js -->
     </div>
 
     <button id="install-button" class="install-btn" data-i18n="install_app" onclick="installPWA()">Install App</button>
+    <button id="notification-button" class="install-btn" style="display: none; background-color: #28a745;" onclick="requestNotificationPermission()" title="Enable push notifications for water level updates">🔔 Enable Notifications</button>
     
     <div class="utility-buttons">
         <button class="utility-button" onclick="clearCacheAndRefresh()" title="Clear cache and refresh the app">🔄 Clear Cache & Refresh</button>
+        <button class="utility-button" onclick="openGlobalAlertSettings()" style="background-color: #17a2b8;" title="Configure alert thresholds for all pages">⚙️ Alert Settings</button>
+    </div>
+
+    <!-- ✅ Global Alert Settings Modal -->
+    <div class="alert-settings-overlay" id="alertSettingsOverlay" onclick="closeGlobalAlertSettings()"></div>
+    <div class="alert-settings-modal" id="alertSettingsModal">
+        <h3>⚙️ Configure Alert Settings</h3>
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Set threshold alerts for all pages and sensors in one place</p>
+        
+        <!-- Global Toggle Controls -->
+        <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <input type="checkbox" id="enableAllAlerts" style="width: 20px; height: 20px; cursor: pointer;">
+                <label for="enableAllAlerts" style="margin-left: 10px; cursor: pointer; font-weight: 600;">Enable All Threshold Alerts</label>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <input type="checkbox" id="enableAllRepeating" style="width: 20px; height: 20px; cursor: pointer;">
+                <label for="enableAllRepeating" style="margin-left: 10px; cursor: pointer; font-weight: 600;">Enable Repeating Alerts (every 5 mins)</label>
+            </div>
+        </div>
+        
+        <!-- Dynamically Generated Pages Section -->
+        <div id="alertPagesContainer" style="margin-bottom: 20px;">
+            <!-- Will be populated by JavaScript -->
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <button class="utility-button" onclick="saveAlertSettingsFromModal()" style="flex: 1; background-color: #28a745;">💾 Save Settings</button>
+            <button class="utility-button" onclick="closeGlobalAlertSettings()" style="flex: 1;">❌ Close</button>
+        </div>
     </div>
 
     <script>
+        // ✅ GENERATE DYNAMIC BUTTONS FROM CONFIG
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('dynamicButtonsContainer');
+            const pages = appConfig.getAllPages();
+            
+            pages.forEach(page => {
+                const button = document.createElement('a');
+                button.href = `app.html?page=${page.id}`;
+                button.className = 'dashboard-button';
+                button.innerHTML = `${page.icon} ${page.displayName}`;
+                container.appendChild(button);
+            });
+        });
+
         async function clearCacheAndRefresh() {
             try {
                 // Unregister all service workers
@@ -322,6 +488,48 @@
                 console.error('❌ Error clearing cache:', error);
                 alert('Error clearing cache. Refreshing page...');
                 location.reload();
+            }
+        }
+        
+        // ✅ Notification Permission Request
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    alert('✅ Notifications already enabled!');
+                    return;
+                }
+                
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        localStorage.setItem('notificationsEnabled', 'true');
+                        new Notification('🔔 Notifications Enabled!', {
+                            body: 'You will now receive updates about water level changes.',
+                            icon: 'IITMZ_Logo_192.png',
+                            badge: 'IITMZ_Logo.ico'
+                        });
+                        console.log('✅ Notifications enabled');
+                        document.getElementById('notification-button').textContent = '✅ Notifications Enabled';
+                        document.getElementById('notification-button').disabled = true;
+                    } else {
+                        alert('Notifications permission denied.');
+                        localStorage.setItem('notificationsEnabled', 'false');
+                    }
+                });
+            } else {
+                alert('Your browser does not support notifications.');
+            }
+        }
+        
+        // ✅ Show Notification
+        function showNotification(title, options = {}) {
+            if (localStorage.getItem('notificationsEnabled') === 'true' && 'Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    new Notification(title, {
+                        icon: 'IITMZ_Logo_192.png',
+                        badge: 'IITMZ_Logo.ico',
+                        ...options
+                    });
+                }
             }
         }
         
@@ -388,6 +596,184 @@
                     deferredPrompt = null;
                 });
             }
+        }
+
+        // ✅ PAGE CONFIGURATION FOR ALERT SETTINGS
+        const allPagesConfig = {
+            'reservoir': {
+                displayName: 'Reservoir',
+                sensors: ['Reservoir', 'Main_Sump', 'Pampa_Sump', 'ICSR_Sump']
+            },
+            'overheadTank': {
+                displayName: 'Overhead Tank',
+                sensors: ['OverheadTank', 'BoreWell_Sump', 'Return_Sump', 'WashOut_Sump']
+            }
+        };
+        
+        // ✅ Get Global Alert Settings
+        function getGlobalAlertSettings() {
+            const defaults = {
+                enabledAlerts: {},
+                enabledRepeating: {},
+                thresholds: {}
+            };
+            
+            Object.values(allPagesConfig).forEach(page => {
+                page.sensors.forEach(sensor => {
+                    defaults.enabledAlerts[sensor] = true;
+                    defaults.enabledRepeating[sensor] = false;
+                    defaults.thresholds[sensor] = { min: null, max: null };
+                });
+            });
+            
+            const saved = localStorage.getItem('globalAlertSettings');
+            if (!saved) return defaults;
+            
+            try {
+                const parsed = JSON.parse(saved);
+                return {
+                    enabledAlerts: { ...defaults.enabledAlerts, ...parsed.enabledAlerts },
+                    enabledRepeating: { ...defaults.enabledRepeating, ...parsed.enabledRepeating },
+                    thresholds: { ...defaults.thresholds, ...parsed.thresholds }
+                };
+            } catch (e) {
+                console.error('Error parsing alert settings:', e);
+                return defaults;
+            }
+        }
+        
+        // ✅ Save Global Alert Settings
+        function saveGlobalAlertSettings(settings) {
+            try {
+                localStorage.setItem('globalAlertSettings', JSON.stringify(settings));
+            } catch (e) {
+                console.error('Error saving alert settings:', e);
+                alert('Error saving settings: ' + e.message);
+            }
+        }
+        
+        // ✅ Render Dynamic Alert Settings Modal
+        function renderAlertSettingsModal() {
+            const container = document.getElementById('alertPagesContainer');
+            const pages = appConfig.getAllPages();
+            const settings = getGlobalAlertSettings();
+            
+            container.innerHTML = '';
+            
+            pages.forEach(page => {
+                const pageId = page.id;
+                const pageConfig = appConfig.getPage(pageId);
+                const sensors = Object.keys(pageConfig.sensors);
+                
+                // Create accordion section for this page
+                const accordion = document.createElement('div');
+                accordion.className = 'alert-page-accordion';
+                accordion.innerHTML = `
+                    <div class="alert-page-header" onclick="toggleAlertPage(this)">
+                        <span>${page.icon} ${page.displayName}</span>
+                        <span style="font-size: 14px;">▼</span>
+                    </div>
+                    <div class="alert-page-content" id="page-${pageId}">
+                        ${sensors.map(sensorName => `
+                            <div class="sensor-settings">
+                                <label>${sensorName}</label>
+                                <div class="sensor-checkbox-group">
+                                    <input type="checkbox" class="alert-enable" data-sensor="${sensorName}" ${settings.enabledAlerts[sensorName] ? 'checked' : ''}>
+                                    <label style="margin: 0; font-weight: normal;">Enable Alerts</label>
+                                </div>
+                                <div class="sensor-checkbox-group">
+                                    <input type="checkbox" class="alert-repeating" data-sensor="${sensorName}" ${settings.enabledRepeating[sensorName] ? 'checked' : ''}>
+                                    <label style="margin: 0; font-weight: normal;">Repeating (every 5 mins)</label>
+                                </div>
+                                <div class="threshold-inputs">
+                                    <label style="margin: 0; font-weight: normal;">Min:</label>
+                                    <input type="number" class="threshold-min" data-sensor="${sensorName}" value="${settings.thresholds[sensorName]?.min || ''}" placeholder="cm">
+                                    <label style="margin: 0; font-weight: normal;">Max:</label>
+                                    <input type="number" class="threshold-max" data-sensor="${sensorName}" value="${settings.thresholds[sensorName]?.max || ''}" placeholder="cm">
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(accordion);
+            });
+            
+            // Update global toggles
+            const allAlerts = settings.enabledAlerts;
+            const allRepeating = settings.enabledRepeating;
+            const enableAllAlertsCheckbox = document.getElementById('enableAllAlerts');
+            const enableAllRepeatingCheckbox = document.getElementById('enableAllRepeating');
+            
+            enableAllAlertsCheckbox.checked = Object.values(allAlerts).every(v => v === true);
+            enableAllRepeatingCheckbox.checked = Object.values(allRepeating).every(v => v === true);
+            
+            // Add global toggle listeners
+            enableAllAlertsCheckbox.addEventListener('change', function() {
+                document.querySelectorAll('.alert-enable').forEach(cb => cb.checked = this.checked);
+            });
+            
+            enableAllRepeatingCheckbox.addEventListener('change', function() {
+                document.querySelectorAll('.alert-repeating').forEach(cb => cb.checked = this.checked);
+            });
+        }
+        
+        // ✅ Toggle Accordion Page
+        function toggleAlertPage(header) {
+            const content = header.nextElementSibling;
+            content.classList.toggle('active');
+            const arrow = header.querySelector('span:last-child');
+            arrow.style.transform = content.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+            arrow.style.transition = 'transform 0.3s';
+        }
+        
+        // ✅ Save Alert Settings from Modal
+        function saveAlertSettingsFromModal() {
+            const settings = {
+                enabledAlerts: {},
+                enabledRepeating: {},
+                thresholds: {}
+            };
+            
+            // Collect all sensor settings
+            document.querySelectorAll('.alert-enable').forEach(checkbox => {
+                const sensor = checkbox.getAttribute('data-sensor');
+                settings.enabledAlerts[sensor] = checkbox.checked;
+            });
+            
+            document.querySelectorAll('.alert-repeating').forEach(checkbox => {
+                const sensor = checkbox.getAttribute('data-sensor');
+                settings.enabledRepeating[sensor] = checkbox.checked;
+            });
+            
+            document.querySelectorAll('.threshold-min').forEach(input => {
+                const sensor = input.getAttribute('data-sensor');
+                if (!settings.thresholds[sensor]) settings.thresholds[sensor] = {};
+                settings.thresholds[sensor].min = input.value ? parseFloat(input.value) : null;
+            });
+            
+            document.querySelectorAll('.threshold-max').forEach(input => {
+                const sensor = input.getAttribute('data-sensor');
+                if (!settings.thresholds[sensor]) settings.thresholds[sensor] = {};
+                settings.thresholds[sensor].max = input.value ? parseFloat(input.value) : null;
+            });
+            
+            saveGlobalAlertSettings(settings);
+            alert('✅ Alert settings saved successfully!');
+            closeGlobalAlertSettings();
+        }
+        
+        // ✅ Open Global Alert Settings
+        function openGlobalAlertSettings() {
+            renderAlertSettingsModal();
+            document.getElementById('alertSettingsOverlay').classList.add('active');
+            document.getElementById('alertSettingsModal').classList.add('active');
+        }
+        
+        // ✅ Close Global Alert Settings
+        function closeGlobalAlertSettings() {
+            document.getElementById('alertSettingsOverlay').classList.remove('active');
+            document.getElementById('alertSettingsModal').classList.remove('active');
         }
 
         // ✅ Force Update Check on Load

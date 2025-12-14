@@ -35,14 +35,14 @@
       "name": "Reservoir",
       "short_name": "Reservoir",
       "description": "View Reservoir water levels",
-      "url": "/IITMZ_WDN/reservoir.html",
+      "url": "/IITMZ_WDN/app.html?page=reservoir",
       "icons": [{ "src": "/IITMZ_WDN/IITMZ_Logo_192.png", "sizes": "192x192" }]
     },
     {
       "name": "Overhead Tank",
       "short_name": "Tank",
       "description": "View Overhead Tank water levels",
-      "url": "/IITMZ_WDN/overhead-tank.html",
+      "url": "/IITMZ_WDN/app.html?page=overheadTank",
       "icons": [{ "src": "/IITMZ_WDN/IITMZ_Logo_192.png", "sizes": "192x192" }]
     }
   ]

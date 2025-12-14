@@ -2,8 +2,10 @@ const CACHE_NAME = 'iitmz-water-mgmt-v1';
 const urlsToCache = [
   '/IITMZ_WDN/',
   '/IITMZ_WDN/index.html',
-  '/IITMZ_WDN/reservoir.html',
-  '/IITMZ_WDN/overhead-tank.html',
+  '/IITMZ_WDN/app.html',
+  '/IITMZ_WDN/admin.html',
+  '/IITMZ_WDN/config.js',
+  '/IITMZ_WDN/app.js',
   '/IITMZ_WDN/translation-manager.js',
   '/IITMZ_WDN/IITMZ.jpg',
   '/IITMZ_WDN/IITMZ_Logo.ico',
