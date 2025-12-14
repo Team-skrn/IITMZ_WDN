@@ -77,6 +77,26 @@
         }
         h1, h2 { color: #333; font-size: 2.5em; }
         h3 { font-size: 1.8em; }
+        .utility-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .utility-button {
+            padding: 8px 16px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .utility-button:hover {
+            background-color: #5a6268;
+        }
         .header {
             background-color: rgba(0, 123, 255, 0.9);
             color: white;
@@ -433,8 +453,39 @@
     <div class="footer">
         <p>© 2025 IIT Madras Zanzibar Water Management System</p>
     </div>
+    
+    <div class="utility-buttons">
+        <button class="utility-button" onclick="clearCacheAndRefresh()" title="Clear cache and refresh the app">🔄 Clear Cache & Refresh</button>
+    </div>
 
     <script>
+        async function clearCacheAndRefresh() {
+            try {
+                // Unregister all service workers
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (let registration of registrations) {
+                        registration.unregister();
+                        console.log('✅ Service Worker unregistered');
+                    }
+                }
+                
+                // Clear all caches
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+                    console.log('✅ Cache cleared');
+                }
+                
+                alert('✅ Cache cleared! Refreshing app...');
+                location.reload();
+            } catch (error) {
+                console.error('❌ Error clearing cache:', error);
+                alert('Error clearing cache. Refreshing page...');
+                location.reload();
+            }
+        }
+        
         function changeLanguage(lang) {
             translationManager.setLanguage(lang);
             localStorage.setItem('preferredLanguage', lang);

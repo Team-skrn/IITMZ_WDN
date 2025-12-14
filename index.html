@@ -34,6 +34,26 @@
             display: block;
             margin: 0;
         }
+        .utility-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .utility-button {
+            padding: 8px 16px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .utility-button:hover {
+            background-color: #5a6268;
+        }
         .button-container { margin-top: 20px; }
         .dashboard-button {
             display: block;
@@ -269,8 +289,42 @@
     </div>
 
     <button id="install-button" class="install-btn" data-i18n="install_app" onclick="installPWA()">Install App</button>
+    
+    <div class="utility-buttons">
+        <button class="utility-button" onclick="clearCacheAndRefresh()" title="Clear cache and refresh the app">🔄 Clear Cache & Refresh</button>
+    </div>
 
     <script>
+        async function clearCacheAndRefresh() {
+            try {
+                // Unregister all service workers
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (let registration of registrations) {
+                        registration.unregister();
+                        console.log('✅ Service Worker unregistered');
+                    }
+                }
+                
+                // Clear all caches
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+                    console.log('✅ Cache cleared');
+                }
+                
+                // Clear localStorage (optional - comment out if you want to keep preferences)
+                // localStorage.clear();
+                
+                alert('✅ Cache cleared! Refreshing app...');
+                location.reload();
+            } catch (error) {
+                console.error('❌ Error clearing cache:', error);
+                alert('Error clearing cache. Refreshing page...');
+                location.reload();
+            }
+        }
+        
         function changeLanguage(lang) {
             translationManager.setLanguage(lang);
             localStorage.setItem('preferredLanguage', lang);
@@ -348,7 +402,5 @@
 
 </body>
 </html>
-
-
 
 
