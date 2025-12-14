@@ -413,17 +413,20 @@
     <button id="notification-button" class="install-btn" style="display: none; background-color: #28a745;" onclick="requestNotificationPermission()" title="Enable push notifications for water level updates">🔔 Enable Notifications</button>
     
     <div class="utility-buttons">
-        <button class="utility-button" onclick="clearCacheAndRefresh()" title="Clear cache and refresh the app">🔄 Clear Cache & Refresh</button>
+        <button class="utility-button" onclick="clearCacheAndRefresh()" title="Clear all cached data and reset the app" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); font-weight: bold; font-size: 16px; padding: 12px 20px; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3); transition: all 0.3s ease;">CLEAR ALL DATA</button>
+        <!-- ALERT SETTINGS DISABLED: Button removed from UI
         <button class="utility-button" onclick="openGlobalAlertSettings()" style="background-color: #17a2b8;" title="Configure alert thresholds for all pages">⚙️ Alert Settings</button>
+        -->
     </div>
 
-    <!-- ✅ Global Alert Settings Modal -->
+    <!-- ALERT SETTINGS MODAL DISABLED: Entire modal hidden
     <div class="alert-settings-overlay" id="alertSettingsOverlay" onclick="closeGlobalAlertSettings()"></div>
     <div class="alert-settings-modal" id="alertSettingsModal">
         <h3>⚙️ Configure Alert Settings</h3>
         <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Set threshold alerts for all pages and sensors in one place</p>
         
         <!-- Global Toggle Controls -->
+        <!--
         <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
             <div style="display: flex; align-items: center; margin-bottom: 10px;">
                 <input type="checkbox" id="enableAllAlerts" style="width: 20px; height: 20px; cursor: pointer;">
@@ -436,15 +439,19 @@
         </div>
         
         <!-- Dynamically Generated Pages Section -->
+        <!--
         <div id="alertPagesContainer" style="margin-bottom: 20px;">
             <!-- Will be populated by JavaScript -->
+        <!--
         </div>
         
         <div style="display: flex; gap: 10px;">
             <button class="utility-button" onclick="saveAlertSettingsFromModal()" style="flex: 1; background-color: #28a745;">💾 Save Settings</button>
             <button class="utility-button" onclick="closeGlobalAlertSettings()" style="flex: 1;">❌ Close</button>
         </div>
+        -->
     </div>
+    -->
 
     <script>
         // ✅ GENERATE DYNAMIC BUTTONS FROM CONFIG
@@ -479,10 +486,27 @@
                     console.log('✅ Cache cleared');
                 }
                 
-                // Clear localStorage (optional - comment out if you want to keep preferences)
-                // localStorage.clear();
+                // Clear localStorage - removes all stored settings/preferences
+                console.log('Clearing localStorage...');
+                const localStorageKeys = Object.keys(localStorage);
+                console.log('Keys to delete:', localStorageKeys);
+                localStorage.clear();
+                console.log('✅ localStorage cleared');
                 
-                alert('✅ Cache cleared! Refreshing app...');
+                // Clear sessionStorage
+                sessionStorage.clear();
+                console.log('✅ sessionStorage cleared');
+                
+                // Clear all IndexedDB databases
+                if ('indexedDB' in window) {
+                    const dbs = await indexedDB.databases();
+                    dbs.forEach(db => {
+                        indexedDB.deleteDatabase(db.name);
+                        console.log(`✅ IndexedDB database '${db.name}' deleted`);
+                    });
+                }
+                
+                alert('✅ All cache and memory cleared! Refreshing app...');
                 location.reload();
             } catch (error) {
                 console.error('❌ Error clearing cache:', error);
@@ -538,6 +562,98 @@
             localStorage.setItem('preferredLanguage', lang);
         }
 
+        // ✅ Auto-request Notification Permission on Load
+        function autoRequestNotifications() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        localStorage.setItem('notificationsEnabled', 'true');
+                        console.log('✅ Notifications auto-enabled');
+                        const btn = document.getElementById('notification-button');
+                        if (btn) {
+                            btn.textContent = '✅ Notifications Enabled';
+                            btn.disabled = true;
+                            btn.style.display = 'none';
+                        }
+                    } else {
+                        localStorage.setItem('notificationsEnabled', 'false');
+                        console.log('⚠️ Notifications permission denied');
+                    }
+                });
+            } else if ('Notification' in window && Notification.permission === 'granted') {
+                localStorage.setItem('notificationsEnabled', 'true');
+                const btn = document.getElementById('notification-button');
+                if (btn) {
+                    btn.textContent = '✅ Notifications Enabled';
+                    btn.disabled = true;
+                    btn.style.display = 'none';
+                }
+            }
+        }
+
+        // ✅ Request Background Execution Permission
+        function requestBackgroundPermission() {
+            if ('permissions' in navigator) {
+                navigator.permissions.query({ name: 'background-execution' }).then(result => {
+                    if (result.state === 'denied') {
+                        console.log('⚠️ Background execution permission denied');
+                        return;
+                    }
+                    if (result.state === 'granted' || result.state === 'prompt') {
+                        console.log('✅ Background execution permission granted/available');
+                        localStorage.setItem('backgroundMonitoringEnabled', 'true');
+                        enableBackgroundMonitoring();
+                    }
+                });
+            }
+            
+            // Android specific: Request SCHEDULE_EXACT_ALARM permission via manifest
+            if ('WakeLock' in navigator) {
+                console.log('✅ Wake Lock API available - can keep device awake during monitoring');
+            }
+        }
+
+        // ✅ Enable Background Monitoring with Wake Lock
+        async function enableBackgroundMonitoring() {
+            try {
+                if ('WakeLock' in navigator) {
+                    const wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('✅ Wake Lock acquired - device will stay awake');
+                    
+                    // Release wake lock if user minimizes app
+                    document.addEventListener('visibilitychange', async () => {
+                        if (document.hidden) {
+                            wakeLock.release();
+                            console.log('✅ Wake Lock released - app in background');
+                        } else {
+                            try {
+                                const newWakeLock = await navigator.wakeLock.request('screen');
+                                console.log('✅ Wake Lock re-acquired - app back in foreground');
+                            } catch (err) {
+                                console.error('Wake Lock request failed:', err);
+                            }
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error('Wake Lock request failed:', err);
+            }
+
+            // Request Service Worker periodic sync every 15 seconds (if supported)
+            if ('serviceWorker' in navigator && 'periodicSync' in ServiceWorkerRegistration.prototype) {
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    await registration.periodicSync.register('check-water-levels', {
+                        minInterval: 15 * 1000 // 15 seconds
+                    });
+                    console.log('✅ Periodic background sync registered');
+                    localStorage.setItem('backgroundSyncEnabled', 'true');
+                } catch (error) {
+                    console.log('⚠️ Periodic sync not available:', error);
+                }
+            }
+        }
+
         // Initialize language on page load
         document.addEventListener('DOMContentLoaded', function() {
             const savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
@@ -545,6 +661,8 @@
                 document.getElementById('language-select').value = savedLanguage;
             }
             translationManager.setLanguage(savedLanguage);
+            autoRequestNotifications();
+            requestBackgroundPermission();
         });
 
         // ✅ Register Service Worker
@@ -653,6 +771,35 @@
         }
         
         // ✅ Render Dynamic Alert Settings Modal
+        /* ====================================================================
+           ALERT SETTINGS FUNCTIONS - ALL DISABLED
+           ====================================================================
+           REASON: Alert configuration system disabled globally in frontend
+           
+           DISABLED FUNCTIONS:
+           - renderAlertSettingsModal() - Generates modal HTML with all page/sensor settings
+           - toggleAlertPage() - Toggles accordion sections in modal
+           - saveAlertSettingsFromModal() - Collects and saves settings from modal
+           - openGlobalAlertSettings() - Opens the settings modal
+           - closeGlobalAlertSettings() - Closes the settings modal
+           
+           DISABLED HELPER:
+           - getGlobalAlertSettings() - Also disabled in app.html
+           - saveGlobalAlertSettings() - Also disabled in app.html
+           
+           DISABLED HTML:
+           - Alert Settings button (line 417)
+           - alert-settings-overlay modal (lines 422-445)
+           
+           WHEN RE-ENABLING:
+           1. Uncomment all functions below
+           2. Uncomment Alert Settings button in HTML
+           3. Uncomment alert-settings-modal HTML
+           4. Test modal opens with all pages/sensors loaded
+           5. Verify settings save to localStorage
+           ====================================================================== */
+        
+        /*
         function renderAlertSettingsModal() {
             const container = document.getElementById('alertPagesContainer');
             const pages = appConfig.getAllPages();
@@ -775,6 +922,7 @@
             document.getElementById('alertSettingsOverlay').classList.remove('active');
             document.getElementById('alertSettingsModal').classList.remove('active');
         }
+        */
 
         // ✅ Force Update Check on Load
         if (navigator.serviceWorker) {

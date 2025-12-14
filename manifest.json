@@ -9,6 +9,11 @@
   "theme_color": "#007bff",
   "description": "Real-time water level monitoring system for IIT Madras Zanzibar",
   "categories": ["utilities", "productivity"],
+  "permissions": [
+    "background-execution",
+    "notifications",
+    "wake-lock"
+  ],
   "icons": [
     {
       "src": "/IITMZ_WDN/IITMZ_Logo_192.png",

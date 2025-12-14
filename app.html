@@ -137,7 +137,7 @@
         
         #chart_container {
             position: relative;
-            padding: 5px 2px;
+            padding: 0;
             background-color: rgba(249, 249, 249, 0.95);
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -146,10 +146,40 @@
             min-height: 300px;
             box-sizing: border-box;
             margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
+        
+        .chart-controls {
+            flex-shrink: 0;
+            padding: 15px;
+            background: #007bff;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            width: 1%;
+            box-sizing: border-box;
+        }
+        
+        #custom-range-section {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
         #level_chart {
             width: 100% !important;
             height: 100% !important;
+            flex: 1 !important;
+            min-height: 250px !important;
         }
         
         /* Modal Styles */
@@ -237,45 +267,69 @@
         }
         .btn-cancel:hover { background-color: #5a6268; }
         
+        /* RESPONSIVE: Tablets */
         @media (max-width: 768px) {
-            body { padding: 10px; font-size: 16px; }
-            h1 { font-size: 28px !important; }
-            .header { flex-direction: column; gap: 8px; }
-            .card { width: 100%; }
-            #chart_container { height: 300px; }
+            #chart_container { height: 350px; }
+            .chart-controls { padding: 12px; gap: 10px; }
         }
-        @media (max-width: 480px) {
+        
+        /* RESPONSIVE: Phones */
+        @media (max-width: 550px) {
             body { padding: 8px; font-size: 14px; }
-            h1 { font-size: 22px !important; }
-            .card { padding: 15px; }
-            .value-box { font-size: 2em; }
+            h1 { font-size: 20px; }
+            
+            #chart_container { 
+                height: auto;
+                width: auto;
+                margin: 20px 0;
+                overflow: hidden;
+                max-height: 100%;
+            }
+            
+            .chart-controls {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .chart-controls > span { width: 100%; margin-bottom: 5px; }
+            .chart-controls > select { width: 100%; padding: 10px; }
+            .chart-controls > div { width: 100%; flex-direction: column; gap: 8px; }
+            
+            #custom-range-section {
+                padding: 12px;
+                margin-top: 10px;
+            }
+            
+            #custom-range-section > div {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            #custom-range-section input,
+            #custom-range-section button {
+                width: 100%;
+                padding: 10px;
+            }
+        }
+        
+        /* RESPONSIVE: Small Phones */
+        @media (max-width: 360px) {
+            body { padding: 5px; }
+            #chart_container { height: 380px; }
         }
     </style>
 </head>
 <body>
-    <div class="language-selector-header">
-        <label data-i18n="language_label">Language:</label>
-        <select id="language-select" onchange="changeLanguage(this.value)">
-            <option value="en">English</option>
-            <option value="es">Español</option>
-            <option value="fr">Français</option>
-            <option value="ta">Tamil</option>
-            <option value="te">Telugu</option>
-            <option value="hi">हिंदी</option>
-            <option value="mr">मराठी</option>
-            <option value="gu">ગુજરાતી</option>
-            <option value="ar">العربية</option>
-            <option value="sw">Swahili</option>
-        </select>
-    </div>
 
     <div class="header">
         <button class="back-button" onclick="goBack()" data-i18n="back">← Back</button>
         <h1 id="pageTitle" data-i18n="water_management">Water Management</h1>
+        <!-- THRESHOLD SETTINGS DISABLED: Alert Settings button removed from UI
         <button class="utility-button" onclick="openThresholdSettings()" style="background-color: #007bff;" title="Set alert thresholds">⚙️ Alert Settings</button>
+        -->
     </div>
 
-    <!-- Threshold Settings Modal -->
+    <!-- THRESHOLD SETTINGS MODAL DISABLED: Entire threshold modal hidden
     <div class="threshold-overlay" id="thresholdOverlay" onclick="closeThresholdSettings()"></div>
     <div class="threshold-settings" id="thresholdSettings">
         <span onclick="closeThresholdSettings()" style="cursor: pointer; font-size: 24px; float: right;">&times;</span>
@@ -285,6 +339,7 @@
         <button class="btn-save" onclick="saveThresholdSettings()">✅ Save Settings</button>
         <button class="btn-cancel" onclick="closeThresholdSettings()">❌ Cancel</button>
     </div>
+    -->
 
     <!-- Sensors Section -->
     <h2 class="section-header" data-i18n="water_level_monitoring" id="sectionTitle">Water Level Monitoring</h2>
@@ -293,8 +348,8 @@
     </div>
 
     <!-- Chart with Controls -->
-    <div id="chart_container" style="position: relative; padding: 5px 2px; background-color: rgba(249, 249, 249, 0.95); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); width: 100%; height: 400px; min-height: 300px; box-sizing: border-box;">
-        <div style="padding: 15px; background: #007bff; color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+    <div id="chart_container">
+        <div class="chart-controls" style="padding: 15px; background: #007bff; color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box;">
             <span style="font-weight: bold; font-size: 18px;" data-i18n="water_level_history">Water Level History</span>
             <select id="days-selector" style="padding: 8px 12px; border-radius: 3px; border: 1px solid #ccc; background: white; color: #333; font-weight: 600; cursor: pointer;">
                 <option value="1" data-i18n="day_1">1 Day</option>
@@ -308,26 +363,27 @@
             </select>
             <div style="display: flex; gap: 10px; align-items: center;">
                 <label style="font-size: 14px; font-weight: bold; color: white;" data-i18n="line_color">Line Color</label>
-                <input type="color" id="line-color-picker" value="#28a745" style="width: 50px; height: 40px; border: 1px solid #ccc; border-radius: 3px; cursor: pointer;">
+                <input type="color" id="line-color-picker" value="#048ebd" style="width: 50px; height: 40px; border: 1px solid #ccc; border-radius: 3px; cursor: pointer;">
             </div>
         </div>
-        <!-- Custom Date Range Section - Hidden by default -->
-        <div id="custom-range-section" style="padding: 15px; background-color: #f9f9f9; border-bottom: 1px solid #ddd; display: none;">
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center;">
-                <div>
-                    <label style="font-size: 12px; font-weight: bold;" data-i18n="from">From:</label><br>
-                    <input type="datetime-local" id="custom-start-date" style="padding: 8px; border: 1px solid #ccc; border-radius: 3px;">
-                </div>
-                <div>
-                    <label style="font-size: 12px; font-weight: bold;" data-i18n="to">To:</label><br>
-                    <input type="datetime-local" id="custom-end-date" style="padding: 8px; border: 1px solid #ccc; border-radius: 3px;">
-                </div>
-                <div style="margin-top: 18px;">
-                    <button onclick="fetchCustomDateRange()" style="padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; font-weight: 600;" data-i18n="fetch_data">Fetch Data</button>
-                </div>
+        <div id="level_chart"></div>
+    </div>
+
+    <!-- Custom Date Range Section - MOVED OUTSIDE CHART CONTAINER -->
+    <div id="custom-range-section" style="padding: 15px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; margin-top: 15px; display: none; width: 100%; box-sizing: border-box;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center;">
+            <div>
+                <label style="font-size: 12px; font-weight: bold;" data-i18n="from">From:</label><br>
+                <input type="datetime-local" id="custom-start-date" style="padding: 8px; border: 1px solid #ccc; border-radius: 3px;">
+            </div>
+            <div>
+                <label style="font-size: 12px; font-weight: bold;" data-i18n="to">To:</label><br>
+                <input type="datetime-local" id="custom-end-date" style="padding: 8px; border: 1px solid #ccc; border-radius: 3px;">
+            </div>
+            <div style="margin-top: 18px;">
+                <button onclick="fetchCustomDateRange()" style="padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; font-weight: 600;" data-i18n="fetch_data">Fetch Data</button>
             </div>
         </div>
-        <div id="level_chart" style="width: 100%; height: calc(100% - 80px); min-height: 300px;"></div>
     </div>
     <div class="timestamp" id="chart_update_time" style="text-align: center; margin-top: 10px; color: #666; font-size: 14px;" data-i18n="waiting_for_history">Waiting for history data...</div>
 
@@ -343,6 +399,14 @@
             configurable: false,
             writable: false
         });
+
+        // ✅ Store config in localStorage for Service Worker background monitoring
+        try {
+            localStorage.setItem('appConfig', JSON.stringify(appConfig));
+            console.log('✅ Config stored for background monitoring');
+        } catch (e) {
+            console.warn('⚠️ Could not store config:', e);
+        }
 
         if (!currentPageConfig) {
             document.body.innerHTML = '<h1>❌ Page not found</h1>';
@@ -381,7 +445,8 @@
                 `;
             });
 
-            // Generate threshold modal inputs
+            // THRESHOLD SETTINGS DISABLED: Modal generation code commented out
+            /*
             const sensorsContainer = document.getElementById('sensorsContainer');
             sensorsContainer.innerHTML = '';
             Object.entries(currentPageConfig.sensors).forEach(([sensorId, sensorConfig]) => {
@@ -409,6 +474,7 @@
                     </div>
                 `;
             });
+            */
 
             // Start fetching data
             updateAllData();
@@ -468,6 +534,25 @@
             }
         }
 
+        /* ====================================================================
+           PUSH NOTIFICATIONS - TEMPORARILY DISABLED
+           ====================================================================
+           REASON: Notification system disabled for testing/refinement
+           
+           COMMENTED CODE:
+           - showNotification() function (lines 533-544)
+           - Displays browser notifications with custom icons and options
+           - Only shows if notifications are enabled in localStorage and browser supports them
+           
+           USAGE (when re-enabling):
+           1. Uncomment showNotification() function below
+           2. Uncomment calls to showNotification() in:
+              - saveThresholdSettings() (line 655)
+              - checkWaterLevelThresholds() (line 697)
+           3. Ensure browser has notification permission granted
+           ====================================================================== */
+        
+        /*
         // ✅ Show Notification
         function showNotification(title, options = {}) {
             if (localStorage.getItem('notificationsEnabled') === 'true' && 'Notification' in window) {
@@ -480,6 +565,7 @@
                 }
             }
         }
+        */
 
         // ✅ PAGE CONFIGURATION
         const pageConfig = {
@@ -488,6 +574,32 @@
             sensors: Object.keys(currentPageConfig.sensors)
         };
 
+        /* ====================================================================
+           ALERT SETTINGS BACKEND FUNCTIONS - ALL DISABLED
+           ====================================================================
+           REASON: Backend threshold checking system disabled globally
+           
+           DISABLED FUNCTIONS:
+           - getGlobalAlertSettings() - Retrieves alert settings from localStorage
+           - saveGlobalAlertSettings() - Saves alert settings to localStorage
+           - checkWaterLevelThresholds() - Checks if water level breaches thresholds
+           
+           DISABLED CALLS:
+           - checkWaterLevelThresholds() call in fetchThingSpeakData()
+           
+           DATA STORAGE:
+           ✅ localStorage.setItem('globalAlertSettings') - Still works but unused
+           ✅ localStorage.getItem('globalAlertSettings') - Retrievable but unused
+           ✅ lastAlert_* timestamps - Still tracked but unused
+           
+           WHEN RE-ENABLING:
+           1. Uncomment all 3 functions below
+           2. Uncomment checkWaterLevelThresholds() call in fetchThingSpeakData()
+           3. Uncomment getGlobalAlertSettings() helper calls
+           4. Test threshold detection with configured limits
+           ====================================================================== */
+        
+        /*
         // ✅ Get Global Alert Settings
         function getGlobalAlertSettings() {
             const defaults = {
@@ -527,7 +639,33 @@
                 alert('Error saving settings: ' + e.message);
             }
         }
+        */
 
+        /* ====================================================================
+           THRESHOLD SETTINGS FUNCTIONS - ALL DISABLED
+           ====================================================================
+           REASON: Threshold settings UI removed from frontend
+           
+           DISABLED FUNCTIONS:
+           - openThresholdSettings() - Opens modal dialog
+           - closeThresholdSettings() - Closes modal dialog
+           - loadThresholdSettings() - Loads saved thresholds from localStorage
+           - saveThresholdSettings() - Saves threshold settings to localStorage
+           
+           BACKEND FUNCTIONALITY:
+           ✅ STILL ACTIVE: checkWaterLevelThresholds() in fetchThingSpeakData()
+           ✅ STILL ACTIVE: Threshold detection and cooldown logic
+           ✅ STILL ACTIVE: localStorage storage of threshold settings
+           
+           WHEN RE-ENABLING:
+           1. Uncomment these function definitions
+           2. Uncomment threshold modal HTML (lines 330-340)
+           3. Uncomment Alert Settings button (line 327)
+           4. Uncomment sensorsContainer generation in initializePage()
+           5. Test threshold modal opens/closes
+           ====================================================================== */
+        
+        /*
         // ✅ Open Threshold Settings Modal
         function openThresholdSettings() {
             document.getElementById('thresholdSettings').classList.add('active');
@@ -591,14 +729,16 @@
                 });
 
                 saveGlobalAlertSettings(settings);
-                showNotification('✅ Alert Settings Saved', {
-                    body: 'Your threshold settings have been saved globally.'
-                });
+                // NOTIFICATION DISABLED: showNotification('✅ Alert Settings Saved', {
+                //     body: 'Your threshold settings have been saved globally.'
+                // });
+                alert('✅ Alert Settings Saved');
                 closeThresholdSettings();
             } catch (e) {
                 alert('Error saving thresholds: ' + e.message);
             }
         }
+        */
 
         // ✅ Check Water Level Thresholds
         function checkWaterLevelThresholds(sensorId, currentLevel) {
@@ -633,7 +773,8 @@
                 }
 
                 if (shouldAlert) {
-                    showNotification(alertTitle, { body: alertMessage });
+                    // NOTIFICATION DISABLED: showNotification(alertTitle, { body: alertMessage });
+                    console.warn('⚠️ Threshold breach detected - Notifications disabled:', { alertTitle, alertMessage });
                     localStorage.setItem(lastAlertKey, now.toString());
                 }
             } catch (e) {
@@ -678,11 +819,8 @@
 
                     updateIndicator(sensorId, formattedValue);
                     const numericValue = parseFloat(formattedValue);
-                    checkWaterLevelThresholds(sensorId, numericValue);
-
-                    showNotification(`💧 ${sensorId} Updated`, {
-                        body: `Water level: ${formattedValue} cm`
-                    });
+                    // THRESHOLD CHECKING DISABLED: checkWaterLevelThresholds(sensorId, numericValue);
+                    console.log(`[DATA] ${sensorId}: ${numericValue} cm (threshold checking disabled)`);
                 }
             } catch (error) {
                 console.error(`Error fetching data for ${sensorId}:`, error);
@@ -756,7 +894,7 @@
         function getResponsiveChartOptions(title, selectedDays = 1) {
             const isMobile = window.innerWidth <= 768;
             const dayText = selectedDays === 1 ? 'Day' : 'Days';
-            const lineColor = localStorage.getItem('graphLineColor') || '#28a745';
+            const lineColor = localStorage.getItem('graphLineColor') || '#048ebd';
             
             return {
                 title: title,
