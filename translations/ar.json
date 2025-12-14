@@ -30,5 +30,9 @@
   "day_7": "7 أيام",
   "waiting_for_updates": "في انتظار التحديثات...",
   "waiting_for_history": "في انتظار البيانات التاريخية...",
-  "line_color": "لون خط الرسم البياني"
+  "water_level_history": "سجل مستوى المياه",
+  "enable_alerts": "تفعيل التنبيهات",
+  "repeat_alerts": "تكرار التنبيهات (كل 5 دقائق)",
+  "min_threshold": "الحد الأدنى",
+  "max_threshold": "الحد الأقصى"
 }

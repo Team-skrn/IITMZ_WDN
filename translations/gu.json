@@ -30,5 +30,9 @@
   "day_7": "7 દિવસ",
   "waiting_for_updates": "અપડેટ્સની રાહ જોઈ રહ્યાં છીએ...",
   "waiting_for_history": "ઇતિહાસ ડેટાની રાહ જોઈ રહ્યાં છીએ...",
-  "line_color": "ગ્રાફ લાઇન રંગ"
+  "water_level_history": "જળ સ્તર ઇતિહાસ",
+  "enable_alerts": "સતર્કતા સક્ષમ કરો",
+  "repeat_alerts": "સતર્કતાને પુનરાવર્તિત કરો (દર 5 મિનિટે)",
+  "min_threshold": "ન્યૂનતમ",
+  "max_threshold": "મહત્તમ"
 }

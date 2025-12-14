@@ -30,5 +30,10 @@
   "day_7": "7 Días",
   "waiting_for_updates": "Esperando actualizaciones...",
   "waiting_for_history": "Esperando datos históricos...",
-  "line_color": "Color de Línea del Gráfico"
+  "line_color": "Color de Línea del Gráfico",
+  "water_level_history": "Historial del Nivel de Agua",
+  "enable_alerts": "Habilitar Alertas",
+  "repeat_alerts": "Repetir Alertas (cada 5 min)",
+  "min_threshold": "Mín",
+  "max_threshold": "Máx"
 }

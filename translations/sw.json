@@ -30,5 +30,9 @@
   "day_7": "Siku 7",
   "waiting_for_updates": "Inasubiri sasisho...",
   "waiting_for_history": "Inasubiri data ya historia...",
-  "line_color": "Rangi ya Mstari wa Grafu"
+  "water_level_history": "Historia ya Kiwango cha Maji",
+  "enable_alerts": "Wezesha Onyo",
+  "repeat_alerts": "Kurudia Onyo (kila dakika 5)",
+  "min_threshold": "Kiwango cha Chini",
+  "max_threshold": "Kiwango cha Juu"
 }

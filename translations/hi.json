@@ -30,5 +30,10 @@
   "day_7": "7 दिन",
   "waiting_for_updates": "अपडेट की प्रतीक्षा...",
   "waiting_for_history": "इतिहास डेटा की प्रतीक्षा...",
-  "line_color": "ग्राफ लाइन रंग"
+  "line_color": "ग्राफ लाइन रंग",
+  "water_level_history": "जल स्तर का इतिहास",
+  "enable_alerts": "अलर्ट सक्षम करें",
+  "repeat_alerts": "अलर्ट दोहराएं (हर 5 मिनट)",
+  "min_threshold": "न्यूनतम",
+  "max_threshold": "अधिकतम"
 }
